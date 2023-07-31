@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>현장조사프로그램</title>
+    <script src="/lib/ol.js"></script>
+    <script src="/assets/js/vendor.min.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/jquery.modal.min.js"></script>
+    <script src="/assets/js/common.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/lib/ol.css" />
+    <link
+      href="/assets/css/bootstrap.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/font.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/common.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/slick.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/aos.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <header>
+      <div class="header">
+        <div class="container">
+          <div class="utility">
+            <!-- 로그인 하면 보여지는 부분 -->
+            <div class="dropdown">
+              <h2 class="skip">개인메뉴</h2>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="MyCareer.html">My Career</a>
+                <a class="dropdown-item" href="이력서관리-목록.html"
+                  >이력서 관리</a
+                >
+                <a class="dropdown-item" href="공고관리-목록.html">공고 관리</a>
+                <a class="dropdown-item" href="지원현황-목록.html">지원 현황</a>
+                <a class="dropdown-item" href="P.I서비스상담-목록.html"
+                  >P.I 서비스</a
+                >
+                <a class="dropdown-item" href="문의사항-목록.html"
+                  >1:1 문의사항</a
+                >
+                <a class="dropdown-item" href="스크랩.html">스크랩</a>
+                <a class="dropdown-item" href="회원정보수정-의사.html"
+                  >회원정보수정</a
+                >
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="메인.html">로그아웃</a>
+              </div>
+            </div>
+          </div>
+          <a class="hamburger menu-btn" href="#" title="모바일메뉴">
+            <div class="top-bun"></div>
+            <div class="meat"></div>
+            <div class="bottom-bun"></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="m-nav">
+        <h2 class="skip">모바일메뉴</h2>
+        <div class="head">
+          <a href="#" class="logo"><h1 class="skip">굿닥터</h1></a>
+          <a href="#" class="nav-close" title="닫기"><span></span></a>
+        </div>
+        <div class="utility">
+          <!-- 로그인 하면 보여지는 부분 -->
+          <a class="user-info" href="회원정보수정-의사.html">
+            <div class="avatar">
+              <img
+                src="assets/images/defaul_profile.png"
+                alt="기본 프로필 이미지"
+              />
+            </div>
+            <ul>
+              <li>굿닥터 선생님</li>
+              <li>가톨릭대학교 성빈센트병원</li>
+            </ul>
+          </a>
+        </div>
+        <div class="gnb">
+          <ul>
+            <li><a href="Public초빙공고-검색.html">Public 초빙공고</a></li>
+            <li><a href="P.I 서비스-검색.html">P.I 서비스</a></li>
+            <li><a href="닥터카운슬링-목록.html">닥터 카운슬링</a></li>
+            <li><a href="빅데이터분석.html">빅데이터 분석</a></li>
+          </ul>
+          <ol>
+            <!-- 로그인 하면 보여지는 부분(개인메뉴) -->
+            <li><a href="MyCareer.html">My Career</a></li>
+            <li><a href="이력서관리-목록.html">이력서 관리</a></li>
+            <li><a href="공고관리-목록.html">공고 관리</a></li>
+            <li><a href="지원현황-목록.html">지원 현황</a></li>
+            <li><a href="P.I서비스상담-목록.html">P.I 서비스</a></li>
+            <li><a href="문의사항-목록.html">1:1 문의사항</a></li>
+            <li><a href="스크랩.html">스크랩</a></li>
+            <li><a href="회원정보수정-의사.html">회원정보수정</a></li>
+            <li><a href="메인.html" class="logout">로그아웃</a></li>
+          </ol>
+        </div>
+      </div>
+      <div class="nav-overlay"></div>
+    </header>
+    <div id="map">
+      <input id="searchBox" type="text" value="검색창" />
+    </div>
+    <script src="/assets/js/gis/map.js" type="module"></script>
+  </body>
+</html>

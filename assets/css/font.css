@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "SCoreDream";
+  font-style: normal;
+  font-weight: 300;
+  src: url(../fonts/SCoreDream3.woff2) format("woff2"),
+        url(../fonts/SCoreDream3.woff) format("woff");
+  font-display: swap;
+ }
+@font-face {
+  font-family: "SCoreDream";
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/SCoreDream4.woff2) format("woff2"),
+        url(../fonts/SCoreDream4.woff) format("woff");
+  font-display: swap;
+ }
+ @font-face {
+  font-family: "SCoreDream";
+  font-style: normal;
+  font-weight: 500;
+  src: url(../fonts/SCoreDream5.woff2) format("woff2"),
+        url(../fonts/SCoreDream5.woff) format("woff");
+  font-display: swap;
+ }
+@font-face {
+  font-family: "SCoreDream";
+  font-style: normal;
+  font-weight: 600;
+  src: url(../fonts/SCoreDream6.woff2) format("woff2"),
+        url(../fonts/SCoreDream6.woff) format("woff");
+  font-display: swap;
+ }
