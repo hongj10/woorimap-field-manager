@@ -1,24 +1,9 @@
-const vectorSource = new ol.source.Vector({
-  format: new ol.format.GeoJSON(),
-  url: function (extent) {
-    let strUrl =
-      "http://127.0.0.1:8888/geoserver/wfs?service=WFS&" +
-      "version=1.1.0&request=GetFeature&typename=map:userlayer&" +
-      "outputFormat=application/json&srsname=EPSG:4326&" +
-      "bbox=" +
-      extent.join(",") +
-      ",EPSG:4326";
-
-    return strUrl;
-  },
-  strategy: ol.loadingstrategy.bbox,
-});
-
-// vectorLayer 선언
-export const vectorLayer = new ol.layer.Vector({
+export let vectorLayer = new ol.layer.Vector({
   id: "vectorLayer",
-  source: vectorSource,
-});
+  source: new ol.source.Vector({
+    format: new ol.format.GeoJSON(),
+  })
+})
 
 // GeoJSON 파일 경로
 const geojsonFilePath = "geojson\\N3P_H0020000.geojson";
@@ -34,11 +19,12 @@ function addGeoJSONLayerToMap(filePath) {
   fetch(filePath)
     .then((response) => response.json())
     .then((geojsonData) => {
-      var vectorSource = new ol.source.Vector({
+      const vectorSource = new ol.source.Vector({
         features: createFeaturesFromGeoJSON(geojsonData), // GeoJSON 데이터를 레이어에 추가
       });
 
-      var vectorLayer = new ol.layer.Vector({
+      vectorLayer = new ol.layer.Vector({
+        id: geojsonData.name,
         source: vectorSource,
         style: new ol.style.Style({
           image: new ol.style.Circle({
@@ -50,6 +36,9 @@ function addGeoJSONLayerToMap(filePath) {
       });
 
       map.addLayer(vectorLayer);
+      $("#layer1ListCheck").attr("value", geojsonData.name);
+      $("#layer1List").text(geojsonData.name)
+      console.log(vectorLayer)
     })
     .catch((error) => console.error("Error loading GeoJSON:", error));
 }

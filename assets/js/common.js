@@ -84,3 +84,8 @@ $(function () {
     $(this).parent().toggleClass("active");
   });
 });
+
+const layerVisble = (evt) => {
+  const changedLayer = map.getAllLayers().find((layer)=>layer.values_.id==evt.value)
+  changedLayer.setVisible(!changedLayer.getVisible())
+}
