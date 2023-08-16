@@ -4,7 +4,7 @@ let geolocation = new ol.Geolocation({
   trackingOptions: {
     enableHighAccuracy: true,
   },
-  projection: "EPSG:4326",
+  projection: "EPSG:5186",
 });
 
 geolocation.setTracking(true);
@@ -38,7 +38,7 @@ positionFeature.setStyle(
 );
 
 export let geoLocationLayer = new ol.layer.Vector({
-  map: map,
+  // map: map,
   source: new ol.source.Vector({
     features: [positionFeature],
   }),

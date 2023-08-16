@@ -311,7 +311,7 @@ select {
   right: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  z-index: 9999;
+  z-index: 10000;
 }
 .m-nav > .head .nav-close {
   width: 45px;
@@ -374,6 +374,7 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-bottom: 1px solid #d9d9d9;
 }
 .m-nav > .utility .btn + .btn {
   margin-left: 0.3rem;
@@ -415,7 +416,7 @@ select {
 .m-nav > .gnb > ul {
   margin: 0;
   padding: 0.3rem 0;
-  border-top: 1px solid #d9d9d9;
+  /* border-top: 1px solid #d9d9d9; */
   border-bottom: 1px solid #d9d9d9;
 }
 .m-nav > .gnb > ul > li > a {

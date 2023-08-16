@@ -85,6 +85,18 @@ $(function () {
   });
 });
 
+const statChange = function(e){
+	let id = e.id;
+	if(!$(e).hasClass('active')){
+    console.log(id)
+		let targetData = $(`#${id}Data`);
+		$('.statItem').not(targetData).hide();
+		$('.changeItem').not(targetData).removeClass('active')
+		targetData.show();
+		$(e).addClass('active');
+	}	
+}
+
 const layerVisble = (evt) => {
   const changedLayer = map.getAllLayers().find((layer)=>layer.values_.id==evt.value)
   changedLayer.setVisible(!changedLayer.getVisible())
