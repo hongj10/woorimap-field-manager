@@ -73,14 +73,13 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.wg_survey_app"
+    namespace "com.woorimap_fieldmanager"
     defaultConfig {
-        applicationId "com.wg_survey_app"
+        applicationId "com.woorimap_fieldmanager"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        missingDimensionStrategy 'react-native-camera', 'general'
     }
     signingConfigs {
         debug {

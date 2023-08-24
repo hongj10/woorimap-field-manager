@@ -1,4 +1,4 @@
-package com.wg_survey_app;
+package com.woorimap_fieldmanager;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

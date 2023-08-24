@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "wg_survey_app.app"
-               BlueprintName = "wg_survey_app"
-               ReferencedContainer = "container:wg_survey_app.xcodeproj">
+               BuildableName = "Woorimap_FieldManager.app"
+               BlueprintName = "Woorimap_FieldManager"
+               ReferencedContainer = "container:Woorimap_FieldManager.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "wg_survey_appTests.xctest"
-               BlueprintName = "wg_survey_appTests"
-               ReferencedContainer = "container:wg_survey_app.xcodeproj">
+               BuildableName = "Woorimap_FieldManagerTests.xctest"
+               BlueprintName = "Woorimap_FieldManagerTests"
+               ReferencedContainer = "container:Woorimap_FieldManager.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "wg_survey_app.app"
-            BlueprintName = "wg_survey_app"
-            ReferencedContainer = "container:wg_survey_app.xcodeproj">
+            BuildableName = "Woorimap_FieldManager.app"
+            BlueprintName = "Woorimap_FieldManager"
+            ReferencedContainer = "container:Woorimap_FieldManager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "wg_survey_app.app"
-            BlueprintName = "wg_survey_app"
-            ReferencedContainer = "container:wg_survey_app.xcodeproj">
+            BuildableName = "Woorimap_FieldManager.app"
+            BlueprintName = "Woorimap_FieldManager"
+            ReferencedContainer = "container:Woorimap_FieldManager.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

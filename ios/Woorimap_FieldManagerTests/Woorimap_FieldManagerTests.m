@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface wg_survey_appTests : XCTestCase
+@interface Woorimap_FieldManagerTests : XCTestCase
 
 @end
 
-@implementation wg_survey_appTests
+@implementation Woorimap_FieldManagerTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {

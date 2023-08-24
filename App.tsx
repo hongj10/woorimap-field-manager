@@ -10,6 +10,7 @@ const App = () => {
     <View style={{ flex: 1 }}>
       <WebView
         ref={webViewRef}
+        originWhitelist={['*']}
         source={{ uri: 'file:///android_asset/index.html' }}
       />
     </View>
