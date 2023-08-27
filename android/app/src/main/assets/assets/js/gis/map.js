@@ -48,6 +48,7 @@ $("#drawSwitch").click(function () {
 
 function createFeaturesFromGeoJSON(geojsonData) {
   var features = new ol.format.GeoJSON().readFeatures(geojsonData);
+  console.log(features)
   return features;
 }
 
@@ -56,58 +57,55 @@ let modifyInteraction;
 let snapInteraction;
 let vectorLayer;
 
-const filePath = "/android_asset/geojson/N3P_H0020000.geojson";
-fetch(filePath)
-  .then((response) => response.json())
-  .then((geojsonData) => {
-    const vectorSource = new ol.source.Vector({
+function displayGeoJSONOnMap(geojsonData) {
+  const vectorSource = new ol.source.Vector({
       features: createFeaturesFromGeoJSON(geojsonData),
-    });
+  });
 
-     vectorLayer = new ol.layer.Vector({
-      // id: geojsonData.name,
+  vectorLayer = new ol.layer.Vector({
       id: 'suveyLayer',
       source: vectorSource,
       style: new ol.style.Style({
-        image: new ol.style.Circle({
-          radius: 6,
-          fill: new ol.style.Fill({ color: "red" }),
-          stroke: new ol.style.Stroke({ color: "white", width: 2 }),
-        }),
+          image: new ol.style.Circle({
+              radius: 6,
+              fill: new ol.style.Fill({ color: "red" }),
+              stroke: new ol.style.Stroke({ color: "white", width: 2 }),
+          }),
       }),
-    });
+  });
 
-    map.addLayer(vectorLayer);
-    // $("#layer1ListCheck").attr("value", geojsonData.name);
+  map.addLayer(vectorLayer);
 
-    insertInteraction = new ol.interaction.Draw({
+  insertInteraction = new ol.interaction.Draw({
       source: vectorLayer.getSource(),
       type: "Point",
-    });
+  });
 
-    modifyInteraction = new ol.interaction.Modify({
+  modifyInteraction = new ol.interaction.Modify({
       source: vectorLayer?.getSource(),
-    });
+  });
 
-    snapInteraction = new ol.interaction.Snap({
+  snapInteraction = new ol.interaction.Snap({
       source: vectorLayer?.getSource(),
-    });
+  });
 
-    insertInteraction.on("drawend", function (event) {
+  insertInteraction.on("drawend", function (event) {
       showInsertTooltip(event);
-    });
-  })
-  .catch((error) => console.error("Error loading GeoJSON:", error));
+  });
+}
 
+document.addEventListener("message", function(event) {
+  const messageData = JSON.parse(event.data);
 
-
-  function loadGeoJSONFromAndroid(geoJSONData) {
-    // 받은 GeoJSON 데이터를 처리
-    console.log('드디어 성공')
-    console.log(geoJSONData)
-    // var features = new ol.format.GeoJSON().readFeatures(JSON.parse(geoJSONData));
-    // ... 지도에 기능 추가 및 레이어에 추가하는 등의 코드
+switch (messageData.type) {
+    case "LOAD_GEOJSON":
+      displayGeoJSONOnMap(messageData.data);
+      console.log("LOAD_GEOJSON");
+      console.log("LOAD_GEOJSON");
+      break;
+    default:
+      console.log("Unknown message type");
   }
-
+});
 
 window.map = map;

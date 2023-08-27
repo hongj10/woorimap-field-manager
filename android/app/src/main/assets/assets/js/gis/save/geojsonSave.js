@@ -25,17 +25,22 @@ const updateGeojson = () => {
           const blob = new Blob([geoJSONString], { type: 'application/json' });
     
           // Blob을 다운로드할 링크를 생성
-          const url = URL.createObjectURL(blob);
-          console.log(url)
-          // 다운로드 링크 생성 및 클릭
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
+          // const url = URL.createObjectURL(blob);
+          // console.log(url)
+          // // 다운로드 링크 생성 및 클릭
+          // const a = document.createElement('a');
+          // a.href = url;
+          // a.download = fileName;
+          // document.body.appendChild(a);
+          // a.click();
     
-          // 생성한 URL 객체 해제
-          URL.revokeObjectURL(url);
+          // // 생성한 URL 객체 해제
+          // URL.revokeObjectURL(url);
+          console.log(geoJSONString)
+          window.ReactNativeWebView.postMessage(JSON.stringify({
+            type: 'SAVE_GEOJSON',
+            data: geoJSONString
+        }));
   };
   
   window.saveFeature = saveFeature;
