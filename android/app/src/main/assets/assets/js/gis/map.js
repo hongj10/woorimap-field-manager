@@ -93,19 +93,52 @@ function displayGeoJSONOnMap(geojsonData) {
       showInsertTooltip(event);
   });
 }
-
+  
 document.addEventListener("message", function(event) {
   const messageData = JSON.parse(event.data);
+  switch (messageData.type) {
+    case 'LOCATION_DATA':
+      const { latitude, longitude } = data;
+        
+      // 위치 업데이트
+      map.getView().setCenter(ol.proj.fromLonLat([longitude, latitude]));
 
-switch (messageData.type) {
-    case "LOAD_GEOJSON":
+      // 위치에 레이어 표출 (원 또는 마커 등)
+      const feature = new ol.Feature({
+        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude])),
+      });
+      const vectorLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+          features: [feature],
+        }),
+        style: new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 6,
+            fill: new ol.style.Fill({
+              color: 'rgba(255, 0, 0, 0.5)',
+            }),
+          }),
+        }),
+      });
+      alert(vectorLayer)
+      map.addLayer(vectorLayer);
+      break;
+    case "LOAD_SHAPEFILE":
+      if(!map.getAllLayers().find((layer)=>layer.values_.id=="suveyLayer")){
       displayGeoJSONOnMap(messageData.data);
-      console.log("LOAD_GEOJSON");
+      }
+      console.log("LOAD_SHAPEFILE");
+      break;
+    case "LOAD_GEOJSON":
+      if(!map.getAllLayers().find((layer)=>layer.values_.id=="suveyLayer")){
+      displayGeoJSONOnMap(messageData.data);
+      }
       console.log("LOAD_GEOJSON");
       break;
     default:
       console.log("Unknown message type");
   }
-});
+})
+
 
 window.map = map;

@@ -98,6 +98,7 @@ const statChange = function(e){
 }
 
 const layerVisble = (evt) => {
+
   const changedLayer = map.getAllLayers().find((layer)=>layer.values_.id==evt.value)
   console.log(evt)
   changedLayer.setVisible(!changedLayer.getVisible())

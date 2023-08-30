@@ -36,10 +36,12 @@ positionFeature.setStyle(
 );
 
 let geoLocationLayer = new ol.layer.Vector({
-  // map: map,
+//   map: map,
   source: new ol.source.Vector({
     features: [positionFeature],
   }),
 });
 
-// map.addLayer(geoLocationLayer);
+setTimeout(function () {
+    map.addLayer(geoLocationLayer);
+}, 1000);
