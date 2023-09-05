@@ -95,32 +95,13 @@ const App = () => {
   // const cameraRef = useRef<RNCamera | null>(null); // RNCamera 참조를 위한 useRef 추가
   const originWhitelist = ['https://api.vworld.kr'];
 
-  const photoTaken = async (imageDataURI: string) => {
-    // 사진 찍은 데이터를 WebView로 전달
-    webViewRef.current?.postMessage(
-      JSON.stringify({
-        type: 'PHOTO_TAKEN',
-        imageDataURI,
-      }),
-    );
-  };
-
   const handleMessage = async (event: {nativeEvent: {data: string}}) => {
     const message = JSON.parse(event.nativeEvent.data);
     if (message.type === 'SAVE_GEOJSON' && message.data) {
       await saveGeoJSONToFile(message.data);
-    } else if (message.type === 'DISPLAY_PHOTO' && message.data) {
-      displayPhoto(message.data); // 이미지 표시 함수 호출
     }
   };
-
-  const displayPhoto = (imageDataURI: string) => {
-    console.log(imageDataURI);
-    webViewRef.current?.injectJavaScript(`
-      displayPhoto("${imageDataURI}");
-    `);
-  };
-
+  
   const saveGeoJSONToFile = async (geoJSONString: string) => {
     if (await requestFilePermissions()) {
       try {

@@ -130,18 +130,18 @@ document.addEventListener('message', function (event) {
     case 'LOAD_SHAPEFILE':
       const shapefileData = messageData.shapefileData;
       try {
-        console.log(shapefileData);
-        const shapefileBuffer = new Uint8Array(shapefileData, 'base64');
+        // console.log(shapefileData);
+        // const shapefileBuffer = new Uint8Array(shapefileData, 'base64');
 
         // shpjs 라이브러리를 사용하여 shapefile 데이터를 파싱하여 GeoJSON으로 변환
-        const geojson = shp.parseShp(shapefileBuffer);
+        // const geojson = shp.parseShp(shapefileBuffer);
 
         // 이제 shapefile의 GeoJSON 표현을 얻었습니다
-        console.log('GeoJSON:', geojson);
+        // console.log('GeoJSON:', geojson);
 
         // JSON으로 변환하려면 간단하게 문자열화합니다
-        const jsonString = JSON.stringify(geojson);
-        console.log('JSON:', jsonString);
+        // const jsonString = JSON.stringify(geojson);
+        // console.log('JSON:', jsonString);
 
         // // Shapefile 파싱
         // const shapefile = shp(shapefileData);

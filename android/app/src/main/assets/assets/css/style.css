@@ -5576,6 +5576,27 @@ p {
   margin-top: 10px; /* Add some space between spinner and message */
 }
 
+  .button-container {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .custom-button {
+    display: inline-block;
+    padding: 5px 20px;
+    font-size: 11px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    background-color: #05adb6; /* 원하는 배경색상으로 변경 가능 */
+  }
+
+  .custom-button.cancel {
+    background-color:#a4b8b9; /* 취소 버튼 배경색상 */
+    margin-left: 10px;
+  }
+  
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
