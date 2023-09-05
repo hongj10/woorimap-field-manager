@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-native-community/geolocation": "^3.0.6",
+    "axios": "^1.5.0",
     "react": "18.2.0",
     "react-native": "0.72.4",
     "react-native-device": "^1.0.1",
@@ -20,7 +21,7 @@
     "react-native-maps": "^1.7.1",
     "react-native-permissions": "^3.8.4",
     "react-native-webview": "^13.3.1",
-    "react-screen-orientation": "^0.0.4",
+    "shapefile": "^0.6.6",
     "shpjs": "^4.0.4"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/shapefile": "^0.6.1",
     "@types/shpjs": "^3.4.2",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
