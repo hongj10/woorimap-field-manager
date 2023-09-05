@@ -19,7 +19,7 @@ const showUpdateTooltip = event => {
     const properties = feature.values_.features[0].values_;
     updateFeature = feature;
 
-    let content = '<h5>속성 정보</h5>';
+    let content = '<h5>현장 정보</h5>';
 
     for (const key in properties) {
       if (properties.hasOwnProperty(key)) {
@@ -28,7 +28,9 @@ const showUpdateTooltip = event => {
         }
 
         let value = properties[key];
-
+        if(value == null) {
+          value = '';
+        }
         if (key === '사진경로') {
           if (value) {
             content += `<img src="${value}" alt="사진" /><br/>`;
@@ -47,6 +49,8 @@ const showUpdateTooltip = event => {
 
     content += `<button onclick="saveFeature()">저장</button>`;
     content += `<button onclick="onInsertCancel()">취소</button>`;
+    // content += `<button class="btn btn-primary btn-lg" onclick="saveFeature()">저장</button>`;
+    // content += `<button class="btn btn-primary btn-lg" onclick="onInsertCancel()">취소</button>`;
     document.getElementById('update-overlay').innerHTML = content;
     updateOverlay.setPosition(event.coordinate);
     updateOverlay.getElement().style.display = 'block';
@@ -56,15 +60,38 @@ const showUpdateTooltip = event => {
   }
 };
 
+
+const photoDisplayElementId = 'photo-display';
 function updateAttributeValue(key, value) {
-  // Update the attribute value in the feature's properties
   const properties = updateFeature.values_.features[0].values_;
-  properties[key] = value;
+
+  if (key === '사진경로') {
+    properties[key] = value; // 이미지 데이터 URI를 설정
+    // 이미지를 표시할 <img> 엘리먼트를 생성하여 추가
+    const imgElement = document.createElement('img');
+    imgElement.src = value;
+    imgElement.alt = '사진';
+    const photoDisplayElement = document.getElementById('photo-display');
+    photoDisplayElement.innerHTML = ''; // 이미지 업데이트를 위해 이전 내용 삭제
+    photoDisplayElement.appendChild(imgElement);
+  } else {
+    properties[key] = value;
+  }
 }
-window.updateAttributeValue = updateAttributeValue;
 
 function onInsertCancel() {
   updateOverlay.getElement().style.display = 'none';
+}
+
+function displayPhoto(imageDataURI) {
+  const imgElement = document.createElement('img');
+  imgElement.src = imageDataURI;
+  imgElement.alt = '사진';
+  alert(imgElement.src)
+  // 이미지를 보여주는 엘리먼트에 추가
+  const photoDisplayElement = document.getElementById('${photoDisplayElementId}');
+  photoDisplayElement.innerHTML = ''; // 이미지 업데이트를 위해 이전 내용 삭제
+  photoDisplayElement.appendChild(imgElement);
 }
 
 function takePhoto() {

@@ -103,3 +103,27 @@ const layerVisble = (evt) => {
   console.log(evt)
   changedLayer.setVisible(!changedLayer.getVisible())
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Get the loading screen and loading message elements
+  var loadingScreen = document.getElementById("loading-screen");
+  var loadingMessage = document.getElementById("loading-message");
+  
+  // Function to hide the loading screen
+  function hideLoadingScreen() {
+    loadingScreen.style.display = "none";
+  }
+
+  // Function to update the loading message
+  function updateLoadingMessage(message) {
+    loadingMessage.textContent = message;
+  }
+
+  // Update the loading message while loading data
+  updateLoadingMessage("현장조사 정보 불러오는 중...");
+
+  // Hide the loading screen after 3 seconds
+  setTimeout(function() {
+    hideLoadingScreen();
+  }, 3000);
+});

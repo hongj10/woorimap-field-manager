@@ -44,4 +44,7 @@ let geoLocationLayer = new ol.layer.Vector({
 
 setTimeout(function () {
     map.addLayer(geoLocationLayer);
-}, 1000);
+    map.getView().setZoom(15);
+    console.log(geoLocationLayer.getSource().getFeatures()[0].getGeometry().getCoordinates())
+    map.getView().setCenter(geoLocationLayer.getSource().getFeatures()[0].getGeometry().getCoordinates());
+}, 3000);

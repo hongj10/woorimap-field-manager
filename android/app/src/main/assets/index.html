@@ -30,9 +30,8 @@
     <script src="assets/js/slick.min.js"></script>
     <script src="assets/js/aos.js"></script>
     <script src="assets/js/ol.js"></script>
-    <script src="node_modules/shpjs/dist/shp.js"></script>
     <script src="assets/js/proj4.js"></script>
-
+    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
   </head>
 <script>
 proj4.defs('EPSG:5186', '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs');
@@ -49,7 +48,7 @@ ol.proj.proj4.register(proj4)
               <h2 class="skip">개인메뉴</h2>
             </div>
           </div>
-          <a class="hamburger menu-btn" href="#" title="모바일메뉴">
+          <a class="hamburger menu-btn" title="모바일메뉴">
             <div class="top-bun"></div>
             <div class="meat"></div>
             <div class="bottom-bun"></div>
@@ -59,7 +58,7 @@ ol.proj.proj4.register(proj4)
 
       <div class="m-nav">
         <div class="head">
-          <a href="#" class="nav-close" title="닫기"><span></span></a>
+          <a class="nav-close" title="닫기"><span></span></a>
         </div>
         <div class="utility" style="height: 80px;">
           <!-- 로그인 하면 보여지는 부분 -->
@@ -79,7 +78,6 @@ ol.proj.proj4.register(proj4)
         <div class="bigdata-trend">
           <div class="row">
             <div class="left">
-              <button onclick="sendMessageToReactNative()">test</button>
               <a type="button" id="layerSearch" onclick="statChange(this)" class="btn btn-rounded changeItem active" style="cursor: pointer;">주소 검색</a>
               <a type="button" id="layerList" onclick="statChange(this)" class="btn btn-rounded changeItem" style="cursor: pointer;">레이어 목록</a>
             </div>
@@ -107,10 +105,10 @@ ol.proj.proj4.register(proj4)
             <li><input id="layer1ListCheck" type="checkbox" onchange="layerVisble(this)" value="suveyLayer" checked/>
               <a id="layer1List">현장조사정보</a></li>
           </ol>
-          <ol>
+          <!-- <ol>
             <li><input id="layer2ListCheck" type="checkbox" onchange="layerVisble(this)" value="N3P_F0020000" checked/>
               <a id="layer2List">N3P_F0020000</a></li>
-          </ol>
+          </ol> -->
         </div>
       </div>
       <div class="nav-overlay"></div>
@@ -129,7 +127,12 @@ ol.proj.proj4.register(proj4)
         <span class="slider round"></span>
       </label>
     </div>
-    <a href="#" class="scrollup" title="가장위로"></a>
+    <a class="scrollup" title="가장위로"></a>
+    
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner"></div>
+      <p id="loading-message" class="loading-message">현장조사 정보 불러오는 중...</p>
+    </div>
     <script src="assets/js/gis/layers/baseLayer.js"></script>
     <script src="assets/js/gis/overlay/insertOverlay.js"></script>
     <script src="assets/js/gis/overlay/updateOverlay.js"></script>
