@@ -1,4 +1,5 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef } from 'react';
+import DeviceInfo from 'react-native-device-info';
 import {View, PermissionsAndroid} from 'react-native';
 import {WebView} from 'react-native-webview';
 import RNFS from 'react-native-fs';
@@ -6,18 +7,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {RNCamera} from 'react-native-camera';
 import shp from 'shpjs';
 import axios from 'axios';
+import { Geometry } from 'geojson';
+import { decode } from 'base-64'; // Import the decode function from base-64
+import IntentLauncher from 'react-native-intent-launcher'; // Import IntentLauncher
 
 const requestFilePermissions = async () => {
   try {
     const granted = await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     ]);
 
     if (
-      granted['android.permission.READ_EXTERNAL_STORAGE'] ===
+      granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
         PermissionsAndroid.RESULTS.GRANTED &&
-      granted['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+      granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
         PermissionsAndroid.RESULTS.GRANTED
     ) {
       console.log('You can read/write files');
@@ -32,17 +36,56 @@ const requestFilePermissions = async () => {
   }
 };
 
+const checkAndRequestPermissions = async () => {
+  const hasPermissions = await requestFilePermissions();
+  if (hasPermissions) {
+    await checkFirstLaunch();
+    await sendGeoJSONToWebView();
+  }
+};
+
+const packageName = DeviceInfo.getBundleId();
+
+const requestManageExternalStoragePermission = () => {
+  IntentLauncher.startActivity({
+    action: 'android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION',
+    data: `package:${packageName}`,
+  });
+};
+
 const checkFirstLaunch = async () => {
   try {
     const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
     if (isFirstLaunch === null) {
+      await requestManageExternalStoragePermission();
       const hasPermissions = await requestFilePermissions();
       if (hasPermissions) {
         // const sourcePath = Platform.OS === 'android'
         // ? `${RNFS.ExternalDirectoryPath}/survey.geojson` // 앱의 외부 저장소 경로를 사용
         // : `${RNFS.MainBundlePath}/geojson/survey.geojson`;
-        const sourcePath = `assets/geojson/survey.geojson`;
-        const destinationPath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
+        const geoJsonContent = `{
+          "type":"FeatureCollection",
+          "features":[
+            {
+              "type":"Feature",
+              "geometry":{
+                "type":"Point",
+                "coordinates":[950788.9055305821, 1951939.113108684]
+              },
+              "properties":{
+                "도엽명":null,
+                "조사내용":null,
+                "주소":null,
+                "현장사진":null
+              }
+            }
+          ]
+        }`;
+
+        const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
+
+        // GeoJSON 파일을 생성하고 내용을 쓰기 위해 writeFile 메서드를 사용합니다.
+        await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
         const folderWgExists = await RNFS.exists(
           `${RNFS.DownloadDirectoryPath}/wg-survey`,
         );
@@ -62,14 +105,6 @@ const checkFirstLaunch = async () => {
         if (!folderShpExists) {
           await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/shp`);
         }
-        // 파일 복사 부분 주석 처리
-        // const fileExists = await RNFS.exists(sourcePath);
-        // if (fileExists) {
-        //   await RNFS.copyFile(sourcePath, destinationPath);
-        //   console.log('File copied successfully!');
-        // } else {
-        //   console.error('Source file does not exist:', sourcePath);
-        // }
         await AsyncStorage.setItem('isFirstLaunch', 'false'); // 최초 실행 상태 저장
       }
     }
@@ -92,9 +127,6 @@ const readGeoJSONFile = async (filePath: string) => {
 
 const App = () => {
   const webViewRef = useRef<WebView>(null);
-  // const cameraRef = useRef<RNCamera | null>(null); // RNCamera 참조를 위한 useRef 추가
-  const originWhitelist = ['https://api.vworld.kr'];
-
   const handleMessage = async (event: {nativeEvent: {data: string}}) => {
     const message = JSON.parse(event.nativeEvent.data);
     if (message.type === 'SAVE_GEOJSON' && message.data) {
@@ -130,21 +162,68 @@ const App = () => {
       console.error('Failed to read GeoJSON data or permission denied.');
     }
 
-    const shapefilePath = `${RNFS.DownloadDirectoryPath}/wg-survey/shp/N3P_F0020000.shp`;
+    readShapefiles()
+  };
 
-    // Shapefile 데이터를 이진 버퍼로 읽어옴
-    const shapefileData = await RNFS.readFile(shapefilePath, 'base64');
+  const readShapefiles = async () => {
+    const shpDirectoryPath = `${RNFS.DownloadDirectoryPath}/wg-survey/shp`;
+    try {
+      const shpFileNames = await RNFS.readdir(shpDirectoryPath);
 
-    if (shapefileData) {
-      webViewRef.current?.postMessage(
-        JSON.stringify({
-          type: 'LOAD_SHAPEFILE',
-          shapefileData,
-        }),
-      );
+      // 각 SHP 파일을 GeoJSON으로 변환하여 지도에 표출
+      for (const shpFileName of shpFileNames) {
+        if (shpFileName.endsWith('.shp')) {
+          const shpFilePath = `${shpDirectoryPath}/${shpFileName}`;
+          // SHP 파일을 GeoJSON으로 변환
+          const geojsonData = await convertShpToGeoJSON(shpFilePath);
+
+          // 지도에 표출하는 함수 호출
+          displayGeoJSONOnMap(geojsonData, shpFileName);
+        }
+      }
+    } catch (error) {
+      console.error('Error reading SHP files:', error);
     }
   };
 
+  const convertBase64ToUint8Array = (base64: string) => {
+    const binaryString = decode(base64); // Use decode from base-64 to decode the base64 string
+    const length = binaryString.length;
+    const uint8Array = new Uint8Array(length);
+  
+    for (let i = 0; i < length; i++) {
+      uint8Array[i] = binaryString.charCodeAt(i);
+    }
+  
+    return uint8Array;
+  };
+
+  const convertShpToGeoJSON = async (shpFilePath: string) => {
+    try {
+      const shpBase64String = await RNFS.readFile(shpFilePath, 'base64');
+      const shpUint8Array = convertBase64ToUint8Array(shpBase64String);
+      const geojsonData = shp.parseShp(shpUint8Array);
+  
+      return geojsonData;
+    } catch (error) {
+      console.error('Error converting SHP to GeoJSON:', error);
+      return null;
+    }
+  };
+  
+  const displayGeoJSONOnMap = (geojsonData: Geometry[] | null, _shpFileName: string) => {
+    if (geojsonData) {
+      const messageData = {
+        type: 'LOAD_SHAPEFILE',
+        shapefileData: geojsonData,
+        shpFileName: _shpFileName,
+      };
+
+      // WebView로 메시지를 전송하여 지도에 표출
+      webViewRef.current?.postMessage(JSON.stringify(messageData));
+    }
+  };
+  
   useEffect(() => {
     const initializeApp = async () => {
       await checkFirstLaunch();
@@ -152,6 +231,7 @@ const App = () => {
     };
 
     initializeApp();
+    checkAndRequestPermissions();
   }, []);
   return (
     <View style={{flex: 1}}>
@@ -170,3 +250,7 @@ const App = () => {
 };
 
 export default App;
+
+function sendGeoJSONToWebView() {
+  throw new Error('Function not implemented.');
+}

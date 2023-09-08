@@ -1,3 +1,7 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": false
+    // 다른 옵션들...
+  }
 }

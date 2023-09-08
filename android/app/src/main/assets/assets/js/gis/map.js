@@ -124,35 +124,49 @@ document.addEventListener('message', function (event) {
     case 'LOAD_GEOJSON':
       if (!map.getAllLayers().find(layer => layer.values_.id == 'suveyLayer')) {
         displayGeoJSONOnMap(messageData.data);
+        document.getElementById('loading-screen').style.display = 'none';
       }
       console.log('LOAD_GEOJSON');
+
       break;
     case 'LOAD_SHAPEFILE':
       const shapefileData = messageData.shapefileData;
+      let shpFileName = messageData.shpFileName;
+      shpFileName = shpFileName.replace(/\.shp$/, '');
       try {
-        // console.log(shapefileData);
-        // const shapefileBuffer = new Uint8Array(shapefileData, 'base64');
+        // GeoJSON 데이터를 파싱하고 Feature로 변환
+        const geoJsonFormat = new ol.format.GeoJSON();
+        const features = geoJsonFormat.readFeatures({
+          type: 'FeatureCollection',
+          features: shapefileData,
+        });
 
-        // shpjs 라이브러리를 사용하여 shapefile 데이터를 파싱하여 GeoJSON으로 변환
-        // const geojson = shp.parseShp(shapefileBuffer);
+        // Point 스타일 설정
+        const pointStyle = new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 6,
+            fill: new ol.style.Fill({
+              color: 'red', // Point 색상
+            }),
+            stroke: new ol.style.Stroke({
+              color: 'black', // Point 테두리 색상
+              width: 2,
+            }),
+          }),
+        });
 
-        // 이제 shapefile의 GeoJSON 표현을 얻었습니다
-        // console.log('GeoJSON:', geojson);
+        // VectorLayer 생성 및 Feature 추가
+        const vectorLayer = new ol.layer.Vector({
+          id: shpFileName,
+          source: new ol.source.Vector({
+            features: features,
+          }),
+          style: pointStyle, // Point 스타일 적용
+        });
 
-        // JSON으로 변환하려면 간단하게 문자열화합니다
-        // const jsonString = JSON.stringify(geojson);
-        // console.log('JSON:', jsonString);
-
-        // // Shapefile 파싱
-        // const shapefile = shp(shapefileData);
-        // console.log(shapefile);
-
-        // // Shapefile 데이터를 GeoJSON으로 변환
-        // const geojsonFeatures = shpToGeoJSON(shapefile);
-        // console.log(geojsonFeatures);
-
-        // // GeoJSON을 지도에 표시
-        // displayGeoJSONOnMap(geojsonFeatures);
+        map.addLayer(vectorLayer); // 위에서 생성한 지도에 레이어 추가
+        // SHP 레이어를 목록에 추가
+        addLayerToLayerList(shpFileName, shpFileName);
       } catch (error) {
         console.error('Error parsing shapefile:', error);
       }
@@ -162,37 +176,16 @@ document.addEventListener('message', function (event) {
   }
 });
 
-function shpToGeoJSON(shapefile) {
-  const geojsonFeatures = [];
-
-  // shapefile 객체 내부의 속성을 순회하며 처리
-  for (const shape of shapefile.features) {
-    const geometryType = shape.type;
-    let geometry;
-
-    switch (geometryType) {
-      case shp.Types.POINT:
-        geometry = {
-          type: 'Point',
-          coordinates: [shape.coordinates[0], shape.coordinates[1]],
-        };
-        break;
-      // 다른 지오메트리 유형도 추가 가능
-      default:
-        console.log('Unsupported geometry type:', geometryType);
-        continue;
-    }
-
-    const feature = {
-      type: 'Feature',
-      geometry,
-      properties: {},
-    };
-
-    geojsonFeatures.push(feature);
-  }
-
-  return geojsonFeatures;
+// SHP 레이어를 목록에 추가
+function addLayerToLayerList(layerName, layerId) {
+  const layerList = layerListData.querySelector('ol');
+  const listItem = document.createElement('li');
+  listItem.innerHTML = `
+    <input type="checkbox" onchange="layerVisible('${layerId}')" value="${layerId}" checked/>
+    <a>${layerName}</a>
+  `;
+  layerList.appendChild(listItem);
 }
+
 
 window.map = map;

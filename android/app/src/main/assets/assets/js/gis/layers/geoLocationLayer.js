@@ -12,8 +12,7 @@ geolocation.on("error", function (error) {
 });
 
 geolocation.on("change:position", function () {
-  let coordinates = geolocation.getPosition();
-  console.log(coordinates);
+  let coordinates = geolocation.getPosition()
   positionFeature.setGeometry(
     coordinates ? new ol.geom.Point(coordinates) : null
   );

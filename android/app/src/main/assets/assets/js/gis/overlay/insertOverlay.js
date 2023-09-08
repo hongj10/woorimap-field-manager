@@ -8,8 +8,7 @@ const showInsertTooltip = event => {
   lastInsertedFeature = feature;
   let content = ''; // = "<h5>속성 정보</h5>";
   content += '<div style="text-align: center; width: 150px;">';
-  content +=
-    '<span>현장조사 정보를 추가하겠습니까?</span>';
+  content += '<span>현장조사 정보를 추가하겠습니까?</span>';
   content +=
     '<button class="custom-button" onclick="onConfirmClick()">확인</button>';
   content +=
@@ -29,14 +28,24 @@ const showInsertTooltip = event => {
 
 function onConfirmClick() {
   insertOverlay.getElement().style.display = 'none';
-  alert('추가되었습니다.');
+  const loadingScreen = document.getElementById('loading-screen');
+  const loadingMessage = document.getElementById('loading-message');
+
+  loadingMessage.textContent = '현장조사 정보 추가하는 중...';
+  loadingScreen.style.display = 'flex';
   updateGeojson();
+
+  alert('추가되었습니다.');
+  loadingScreen.style.display = 'none';
 }
 
 function onUpdateCancel() {
   if (lastInsertedFeature) {
-    console.log(map.getAllLayers()[1]);
-    map.getAllLayers()[1].getSource().removeFeature(lastInsertedFeature);
+    map
+      .getAllLayers()
+      .find(layer => layer.values_.id == 'suveyLayer')
+      .getSource()
+      .removeFeature(lastInsertedFeature);
     lastInsertedFeature = null; // 삭제된 feature 초기화
   }
   insertOverlay.getElement().style.display = 'none';
