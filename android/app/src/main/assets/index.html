@@ -1,145 +1,157 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>현장조사 모바일 앱</title>
-    <meta name="title" content="현장조사 모바일 앱" />
-    <meta name="author" content="" />
-    <meta name="keywords" content="" />
 
-    <link
-      href="assets/css/bootstrap.min.css"
-      rel="stylesheet"
-      type="text/css"
-    />
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/font.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/common.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/main.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/slick.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/aos.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/ol.css" rel="stylesheet" type="text/css" />
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>현장조사 모바일 앱</title>
+  <meta name="title" content="현장조사 모바일 앱" />
+  <meta name="author" content="" />
+  <meta name="keywords" content="" />
 
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/js/common.js"></script>
-    <script src="assets/js/vendor.min.js"></script>
-    <script src="assets/js/slick.min.js"></script>
-    <script src="assets/js/aos.js"></script>
-    <script src="assets/js/ol.js"></script>
-    <script src="assets/js/proj4.js"></script>
-    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
-  </head>
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/font.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/common.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/main.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/responsive.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/slick.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/aos.css" rel="stylesheet" type="text/css" />
+  <link href="assets/css/ol.css" rel="stylesheet" type="text/css" />
+
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/vendor.min.js"></script>
+  <script src="assets/js/slick.min.js"></script>
+  <script src="assets/js/aos.js"></script>
+  <script src="assets/js/ol.js"></script>
+  <script src="assets/js/proj4.js"></script>
+  <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
+</head>
 <script>
-proj4.defs('EPSG:5186', '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs');
-ol.proj.proj4.register(proj4)
+  proj4.defs('EPSG:5186', '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs');
+  ol.proj.proj4.register(proj4)
 
 </script>
-  <body>
-    <header>
-      <div class="header">
-        <div class="container">
-          <div class="utility">
-            <!-- 로그인 하면 보여지는 부분 -->
-            <div class="dropdown">
-              <h2 class="skip">개인메뉴</h2>
-            </div>
+
+<body>
+  <header>
+    <div class="header">
+      <div class="container">
+        <div class="utility">
+          <!-- 로그인 하면 보여지는 부분 -->
+          <div class="dropdown">
+            <h2 class="skip">개인메뉴</h2>
           </div>
-          <a class="hamburger menu-btn" title="모바일메뉴">
-            <div class="top-bun"></div>
-            <div class="meat"></div>
-            <div class="bottom-bun"></div>
-          </a>
+        </div>
+        <a class="hamburger menu-btn" title="모바일메뉴">
+          <div class="top-bun"></div>
+          <div class="meat"></div>
+          <div class="bottom-bun"></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="m-nav">
+      <div class="head">
+        <a class="nav-close" title="닫기"><span></span></a>
+      </div>
+      <div class="utility" style="height: 80px;">
+        <!-- 로그인 하면 보여지는 부분 -->
+        <a class="user-info">
+          <div class="avatar">
+            <img src="assets/images/defaul_profile.png" alt="기본 프로필 이미지" />
+          </div>
+          <ul>
+            <li>환영합니다!</li>
+            <li>test 1님</li>
+          </ul>
+        </a>
+      </div>
+      <div class="bigdata-trend">
+        <div class="row">
+          <div class="left">
+            <a type="button" id="layerSearch" onclick="statChange(this)" class="btn btn-rounded changeItem active"
+              style="cursor: pointer;">주소 검색</a>
+            <a type="button" id="layerList" onclick="statChange(this)" class="btn btn-rounded changeItem"
+              style="cursor: pointer;">레이어 목록</a>
+          </div>
         </div>
       </div>
-
-      <div class="m-nav">
-        <div class="head">
-          <a class="nav-close" title="닫기"><span></span></a>
-        </div>
-        <div class="utility" style="height: 80px;">
-          <!-- 로그인 하면 보여지는 부분 -->
-          <a class="user-info">
-            <div class="avatar">
-              <img
-                src="assets/images/defaul_profile.png"
-                alt="기본 프로필 이미지"
-              />
-            </div>
-            <ul>
-              <li>환영합니다!</li>
-              <li>test 1님</li>
-            </ul>
-          </a>
-        </div>
-        <div class="bigdata-trend">
-          <div class="row">
-            <div class="left">
-              <a type="button" id="layerSearch" onclick="statChange(this)" class="btn btn-rounded changeItem active" style="cursor: pointer;">주소 검색</a>
-              <a type="button" id="layerList" onclick="statChange(this)" class="btn btn-rounded changeItem" style="cursor: pointer;">레이어 목록</a>
-            </div>
-          </div>
-        </div>
-        <div class="gnb statItem" id="layerSearchData">
-          <div id="search-tab1" class="tab-pane show active">
+      <div class="gnb statItem" id="layerSearchData">
+        <div id="search-tab1" class="tab-pane show active">
           <div class="search-form">
-              <div class="keyword">
-                  <input id="searchText" style="width: 70%;" type="text" title="주소검색" class="form-control" placeholder="검색어(주소)를 입력하세요" />
-                  <button id="searchAddressButton" class="btn btn-primary btn-lg" type="button">검색</button>
-              </div>
+            <div class="keyword">
+              <input id="searchText" style="width: 70%;" type="text" title="주소검색" class="form-control"
+                placeholder="검색어(주소)를 입력하세요" />
+              <button id="searchAddressButton" class="btn btn-primary btn-lg" type="button">검색</button>
+            </div>
           </div>
-            <div class="scroll-size-1">
-              <div class="search-result-list">
-                <div id="noResults" class="none" style="display: none;"><span>조건에 맞는 결과가 없습니다.</span></div>
-                <ul id="resultList"></ul>
+          <div class="scroll-size-1">
+            <div class="search-result-list">
+              <div id="noResults" class="none" style="display: none;"><span>조건에 맞는 결과가 없습니다.</span></div>
+              <ul id="resultList"></ul>
             </div>
             <div id="pagination"></div>
-            </div>
           </div>
         </div>
-        <div class="gnb statItem" id="layerListData"  style="display: none;">
-          <ol>
-            <li><input type="checkbox" onchange="layerVisible('suveyLayer')" value="suveyLayer" checked/>
-              <a>현장조사정보</a></li>
-          </ol>
-          <!-- <ol>
+      </div>
+      <div class="gnb statItem" id="layerListData" style="display: none;">
+        <ol>
+          <li><input type="checkbox" onchange="layerVisible('suveyLayer')" value="suveyLayer" checked />
+            <a>현장조사정보</a>
+          </li>
+        </ol>
+        <!-- <ol>
             <li><input id="layer2ListCheck" type="checkbox" onchange="layerVisible(this)" value="N3P_F0020000" checked/>
               <a id="layer2List">N3P_F0020000</a></li>
           </ol> -->
-        </div>
       </div>
-      <div class="nav-overlay"></div>
-    </header>
-
-    <div id="map">
-      <div id="insert-overlay">
-      </div>
-      <div id="update-overlay">
-      </div>
-        <!-- 센서 데이터를 표시할 엘리먼트 -->
-  <div id="sensor-data" style="position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;"></div>
-
-      <label class="switch">
-        <input id="drawSwitch" type="checkbox" />
-        <span class="slider round"></span>
-      </label>
     </div>
-    <a class="scrollup" title="가장위로"></a>
-    
-    <div id="loading-screen" class="loading-screen">
-      <div class="loading-spinner"></div>
-      <p id="loading-message" class="loading-message">현장조사 정보 불러오는 중...</p>
+    <div class="nav-overlay"></div>
+  </header>
+
+  <div id="map">
+    <div id="insert-overlay">
     </div>
-    <script src="assets/js/gis/layers/baseLayer.js"></script>
-    <script src="assets/js/gis/overlay/insertOverlay.js"></script>
-    <script src="assets/js/gis/overlay/updateOverlay.js"></script>
-    <script src="assets/js/gis/layers/geoLocationLayer.js"></script>
-    <script src="assets/js/gis/save/geojsonSave.js"></script>
-    <script src="assets/js/gis/search/addressSearch.js"></script>
-    <script src="assets/js/gis/map.js"></script>
-    <script src="assets/js/gis/layers/shpLayer.js"></script>
-  </body>
+    <div id="update-overlay">
+    </div>
+    <!-- 센서 데이터를 표시할 엘리먼트 -->
+    <div id="sensor-data"
+      style="position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;">
+    </div>
+    <div class="custom-button cancel" title="내 위치로 이동" onclick="moveMyLocation()" style="
+    position: absolute;
+    bottom: 50px;
+    right: 10px;
+    z-index: 1;
+    width: 58px;
+    padding-left: 8px;
+    padding-right: 2px;
+">
+      내 위치
+    </div>
+    <label class="switch">
+      <input id="drawSwitch" type="checkbox" />
+      <span class="slider round"></span>
+    </label>
+  </div>
+  <a class="scrollup" title="가장위로"></a>
+
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-spinner"></div>
+    <p id="loading-message" class="loading-message">현장조사 정보 불러오는 중...</p>
+  </div>
+  <script src="assets/js/gis/layers/baseLayer.js"></script>
+  <script src="assets/js/gis/overlay/insertOverlay.js"></script>
+  <script src="assets/js/gis/overlay/updateOverlay.js"></script>
+  <script src="assets/js/gis/layers/geoLocationLayer.js"></script>
+  <script src="assets/js/gis/save/geojsonSave.js"></script>
+  <script src="assets/js/gis/search/addressSearch.js"></script>
+  <script src="assets/js/gis/map.js"></script>
+  <script src="assets/js/gis/layers/shpLayer.js"></script>
+</body>
+
 </html>

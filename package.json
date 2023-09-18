@@ -37,6 +37,7 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/base-64": "^1.0.0",
     "@types/react": "^18.0.24",
+    "@types/react-native-permissions": "^2.0.0",
     "@types/react-test-renderer": "^18.0.0",
     "@types/shapefile": "^0.6.1",
     "@types/shpjs": "^3.4.2",

@@ -35,12 +35,12 @@ $('#drawSwitch').click(function () {
   if ($('#drawSwitch').hasClass('active')) {
     map.addInteraction(insertInteraction);
     map.addInteraction(modifyInteraction);
-    map.addInteraction(snapInteraction);
+    map.removeInteraction(selectInteraction);
     map.on('click', updateEventHandler);
   } else {
     map.removeInteraction(insertInteraction);
     map.removeInteraction(modifyInteraction);
-    map.removeInteraction(snapInteraction);
+    map.addInteraction(selectInteraction);
     map.un('click', updateEventHandler);
   }
 });
@@ -53,7 +53,7 @@ function createFeaturesFromGeoJSON(geojsonData) {
 
 let insertInteraction;
 let modifyInteraction;
-let snapInteraction;
+let selectInteraction;
 let vectorLayer;
 
 function displayGeoJSONOnMap(geojsonData) {
@@ -84,8 +84,19 @@ function displayGeoJSONOnMap(geojsonData) {
     source: vectorLayer?.getSource(),
   });
 
-  snapInteraction = new ol.interaction.Snap({
+  selectInteraction = new ol.interaction.Select({
     source: vectorLayer?.getSource(),
+  });
+
+  map.addInteraction(selectInteraction);
+
+  selectInteraction.on('select', function (event) {
+    alert('select')
+    if (event.selected.length > 0) {
+      showSelectTooltip(event);
+    } else {
+      updateOverlay.getElement().style.display = 'none';
+    }
   });
 
   insertInteraction.on('drawend', function (event) {
@@ -187,5 +198,72 @@ function addLayerToLayerList(layerName, layerId) {
   layerList.appendChild(listItem);
 }
 
+// 내위치로 이동함수
+function moveMyLocation() {
+  map
+    .getView()
+    .setCenter(
+      geoLocationLayer
+        .getSource()
+        .getFeatures()[0]
+        .getGeometry()
+        .getCoordinates(),
+    );
+  map.getView().setZoom(16);
+}
+
+const showSelectTooltip = event => {
+  const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
+    return feature;
+  });
+
+  if (feature?.values_.features == undefined) {
+    return;
+  }
+
+  if (insertOverlay.getElement().style.display == 'block') {
+    alert('저장 후 수정 가능합니다.');
+    return;
+  }
+
+  if (feature) {
+    const properties = feature.values_.features[0].values_;
+    let content =
+      '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onInsertCancel()"></div>';
+
+    for (const key in properties) {
+      if (properties.hasOwnProperty(key)) {
+        if (key == 'geometry') {
+          continue;
+        }
+
+        let value = properties[key];
+
+        if (key === '현장사진') {
+          content += `<strong class="surveyKey">${key}</strong>`;
+          content += `<input id="photo-text" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
+          if (value) {
+            content += `<img id="photo-display" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+          } else {
+            content += `<img id="photo-display" style="width : 100%; height : auto;"/>`;
+          }
+          continue;
+        }
+        if (value == null) {
+          value = '';
+        }
+        content += `<strong class="surveyKey">${key}</strong>`;
+        content += `<input class="surveyValue" type="text" value="${value}" readonly/><br/>`;
+      }
+    }
+
+    const updateOverlayElement = document.getElementById('update-overlay');
+    updateOverlayElement.innerHTML = content;
+    updateOverlay.getElement().style.display = 'block';
+    insertOverlay.getElement().style.display = 'none';
+  } else {
+    updateOverlay.getElement().style.display = 'none';
+  }
+};
 
 window.map = map;

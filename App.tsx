@@ -4,45 +4,62 @@ import {View, PermissionsAndroid} from 'react-native';
 import {WebView} from 'react-native-webview';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// import {RNCamera} from 'react-native-camera';
 import shp from 'shpjs';
 import axios from 'axios';
 import { Geometry } from 'geojson';
 import { decode } from 'base-64'; // Import the decode function from base-64
 import IntentLauncher from 'react-native-intent-launcher'; // Import IntentLauncher
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'; // Import Permissions from react-native-permissions
 
-const requestFilePermissions = async () => {
-  try {
-    const granted = await PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    ]);
+// const requestFilePermissions = async () => {
+//   try {
+//     const granted = await PermissionsAndroid.requestMultiple([
+//       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+//       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+//     ]);
 
-    if (
-      granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
-        PermissionsAndroid.RESULTS.GRANTED &&
-      granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
-        PermissionsAndroid.RESULTS.GRANTED
-    ) {
-      console.log('You can read/write files');
-      return true;
-    } else {
-      console.log('File read/write permission denied');
-      return false;
-    }
-  } catch (err) {
-    console.warn(err);
-    return false;
-  }
-};
+//     if (
+//       granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
+//         PermissionsAndroid.RESULTS.GRANTED &&
+//       granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
+//         PermissionsAndroid.RESULTS.GRANTED
+//     ) {
+//       console.log('You can read/write files');
+//       return true;
+//     } else {
+//       console.log('File read/write permission denied');
+//       return false;
+//     }
+//   } catch (err) {
+//     console.warn(err);
+//     return false;
+//   }
+// };
 
-const checkAndRequestPermissions = async () => {
-  const hasPermissions = await requestFilePermissions();
-  if (hasPermissions) {
-    await checkFirstLaunch();
-    await sendGeoJSONToWebView();
-  }
-};
+// const requestFilePermissions = async () => {
+//   try {
+//     const result = await request(PERMISSIONS.ANDROID.MANAGE_EXTERNAL_STORAGE); // MANAGE_EXTERNAL_STORAGE 권한 요청
+//     if (result === RESULTS.GRANTED) {
+//       console.log('MANAGE_EXTERNAL_STORAGE permission granted');
+//       return true;
+//     } else {
+//       console.log('MANAGE_EXTERNAL_STORAGE permission denied');
+//       return false;
+//     }
+//   } catch (error) {
+//     console.warn(error);
+//     return false;
+//   }
+// };
+
+
+// const checkAndRequestPermissions = async () => {
+  // const hasPermissions = await requestFilePermissions();
+  // if (hasPermissions) {
+    // await checkFirstLaunch();
+    // await sendGeoJSONToWebView();
+  // }
+// };
 
 const packageName = DeviceInfo.getBundleId();
 
@@ -58,11 +75,6 @@ const checkFirstLaunch = async () => {
     const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
     if (isFirstLaunch === null) {
       await requestManageExternalStoragePermission();
-      const hasPermissions = await requestFilePermissions();
-      if (hasPermissions) {
-        // const sourcePath = Platform.OS === 'android'
-        // ? `${RNFS.ExternalDirectoryPath}/survey.geojson` // 앱의 외부 저장소 경로를 사용
-        // : `${RNFS.MainBundlePath}/geojson/survey.geojson`;
         const geoJsonContent = `{
           "type":"FeatureCollection",
           "features":[
@@ -82,10 +94,6 @@ const checkFirstLaunch = async () => {
           ]
         }`;
 
-        const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
-
-        // GeoJSON 파일을 생성하고 내용을 쓰기 위해 writeFile 메서드를 사용합니다.
-        await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
         const folderWgExists = await RNFS.exists(
           `${RNFS.DownloadDirectoryPath}/wg-survey`,
         );
@@ -105,8 +113,9 @@ const checkFirstLaunch = async () => {
         if (!folderShpExists) {
           await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/shp`);
         }
+        const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
+        await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
         await AsyncStorage.setItem('isFirstLaunch', 'false'); // 최초 실행 상태 저장
-      }
     }
   } catch (error) {
     console.error("Failed to check app's first launch: ", error);
@@ -114,7 +123,7 @@ const checkFirstLaunch = async () => {
 };
 
 const readGeoJSONFile = async (filePath: string) => {
-  if (await requestFilePermissions()) {
+  // if (await requestFilePermissions()) {
     try {
       const geojsonData = await RNFS.readFile(filePath, 'utf8');
       return geojsonData;
@@ -122,7 +131,7 @@ const readGeoJSONFile = async (filePath: string) => {
       console.error(error);
       return null;
     }
-  }
+  // }
 };
 
 const App = () => {
@@ -135,14 +144,14 @@ const App = () => {
   };
   
   const saveGeoJSONToFile = async (geoJSONString: string) => {
-    if (await requestFilePermissions()) {
+    // if (await requestFilePermissions()) {
       try {
         const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
         await RNFS.writeFile(filePath, geoJSONString, 'utf8');
         console.log('GeoJSON 성공적으로 저장되었습니다!');
       } catch (error) {
         console.error('GeoJSON 저장 실패: ', error);
-      }
+      // }
     }
   };
 
@@ -218,8 +227,6 @@ const App = () => {
         shapefileData: geojsonData,
         shpFileName: _shpFileName,
       };
-
-      // WebView로 메시지를 전송하여 지도에 표출
       webViewRef.current?.postMessage(JSON.stringify(messageData));
     }
   };
@@ -231,7 +238,6 @@ const App = () => {
     };
 
     initializeApp();
-    checkAndRequestPermissions();
   }, []);
   return (
     <View style={{flex: 1}}>

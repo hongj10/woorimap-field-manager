@@ -6,11 +6,9 @@ const saveFeature = () => {
         }
         updateFeature.values_.features[0].values_[document.getElementsByClassName("surveyKey")[i].innerText] = document.getElementsByClassName("surveyValue")[i].value;
   }
-  // document.getElementById("loading-screen").style.display = "block";
-  // document.getElementById("loading-message").text = "현장조사 정보 하는 중...";
   updateGeojson();
-  // document.getElementById("loading-screen").style.display = "none";
   alert('저장되었습니다.');
+  updateOverlay.getElement().style.display = 'none';
 };
 
 const updateGeojson = () => {

@@ -5,7 +5,7 @@ const showUpdateTooltip = event => {
   const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
     return feature;
   });
-  
+
   if (feature?.values_.features == undefined) {
     return;
   }
@@ -19,7 +19,7 @@ const showUpdateTooltip = event => {
     const properties = feature.values_.features[0].values_;
     updateFeature = feature;
 
-    let content = '<h5>현장 정보</h5>';
+    let content = '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onInsertCancel()"></div>';
 
     for (const key in properties) {
       if (properties.hasOwnProperty(key)) {
@@ -31,16 +31,16 @@ const showUpdateTooltip = event => {
 
         if (key === '현장사진') {
           content += `<strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text" style="display: none;" class="surveyValue" type="text" value="${value}" /><br/>`;
+          content += `<input id="photo-text" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
           if (value) {
             content += `<img id="photo-display" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
-          }else{
+          } else {
             content += `<img id="photo-display" style="width : 100%; height : auto;"/>`;
           }
           content += `<button onclick="takePhoto()">사진 찍기</button>`;
           continue;
         }
-        if(value == null) {
+        if (value == null) {
           value = '';
         }
         content += `<strong class="surveyKey">${key}</strong>`;
@@ -50,7 +50,7 @@ const showUpdateTooltip = event => {
 
     content += `<div class="button-container">
     <button class="custom-button" onclick="saveFeature()">저장</button>
-    <button class="custom-button cancel" onclick="onInsertCancel()">취소</button>
+    <button class="custom-button cancel" onclick="deleteFeature()">삭제</button>
   </div>`;
     const updateOverlayElement = document.getElementById('update-overlay');
     updateOverlayElement.innerHTML = content; // Update overlay content
@@ -64,6 +64,17 @@ const showUpdateTooltip = event => {
 
 function onInsertCancel() {
   updateOverlay.getElement().style.display = 'none';
+}
+
+function deleteFeature() {
+  if(window.confirm('정말 삭제하시겠습니까?')){
+  const layer = map.getAllLayers().find(layer => layer.values_.id == 'suveyLayer')
+  console.log(layer)
+  console.log(updateFeature)
+  layer.getSource().removeFeature(updateFeature)
+  updateOverlay.getElement().style.display = 'none';
+  updateGeojson()
+}
 }
 
 function displayPhoto(imageDataURI) {
@@ -97,7 +108,7 @@ function takePhoto() {
 function compressImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const img = new Image();
       img.src = e.target.result;
       img.onload = () => {
@@ -131,16 +142,15 @@ function compressImage(file) {
 
         resolve(compressedBase64);
       };
-      img.onerror = (error) => {
+      img.onerror = error => {
         reject(error);
       };
     };
-    reader.onerror = (error) => {
+    reader.onerror = error => {
       reject(error);
     };
     reader.readAsDataURL(file);
   });
 }
-
 
 window.onInsertCancel = onInsertCancel;
