@@ -21,17 +21,17 @@ geolocation.on("change:position", function () {
 let positionFeature = new ol.Feature();
 positionFeature.setStyle(
   new ol.style.Style({
-    image: new ol.style.Circle({
-      radius: 6,
-      fill: new ol.style.Fill({
-        color: "#3399CC",
+      image: new ol.style.Circle({
+        radius: 6,
+        fill: new ol.style.Fill({
+          color: "blue", // 동그라미의 색상
+        }),
+        stroke: new ol.style.Stroke({
+          color: "white", // 동그라미 테두리 색상
+          width: 2,
+        }),
       }),
-      stroke: new ol.style.Stroke({
-        color: "#fff",
-        width: 2,
-      }),
-    }),
-  })
+    })
 );
 
 let geoLocationLayer = new ol.layer.Vector({

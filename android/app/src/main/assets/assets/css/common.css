@@ -51,10 +51,11 @@ select {
   margin-right: auto;
 }
 .header .logo a {
-  width: 151px;
+  width: 100px;
   height: 25px;
   background-size: contain;
   display: block;
+  background: url(../images/logo.png) top left no-repeat;
 }
 .header .gnb > ul {
   margin: 0;

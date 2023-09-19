@@ -25,23 +25,18 @@ const map = new ol.Map({
   view: defaultView,
 });
 
-// 클릭 이벤트 리스너 함수
-function updateEventHandler(event) {
-  showUpdateTooltip(event);
-}
-
 $('#drawSwitch').click(function () {
   $(this).toggleClass('active');
   if ($('#drawSwitch').hasClass('active')) {
     map.addInteraction(insertInteraction);
     map.addInteraction(modifyInteraction);
     map.removeInteraction(selectInteraction);
-    map.on('click', updateEventHandler);
+    map.on('click', showUpdateTooltip);
   } else {
     map.removeInteraction(insertInteraction);
     map.removeInteraction(modifyInteraction);
     map.addInteraction(selectInteraction);
-    map.un('click', updateEventHandler);
+    map.un('click', showUpdateTooltip);
   }
 });
 
@@ -66,7 +61,7 @@ function displayGeoJSONOnMap(geojsonData) {
     source: vectorSource,
     style: new ol.style.Style({
       image: new ol.style.Circle({
-        radius: 6,
+        radius: 8,
         fill: new ol.style.Fill({color: 'red'}),
         stroke: new ol.style.Stroke({color: 'white', width: 2}),
       }),
@@ -91,7 +86,6 @@ function displayGeoJSONOnMap(geojsonData) {
   map.addInteraction(selectInteraction);
 
   selectInteraction.on('select', function (event) {
-    alert('select')
     if (event.selected.length > 0) {
       showSelectTooltip(event);
     } else {
@@ -143,7 +137,11 @@ document.addEventListener('message', function (event) {
     case 'LOAD_SHAPEFILE':
       const shapefileData = messageData.shapefileData;
       let shpFileName = messageData.shpFileName;
+      let folderName = messageData.folderName;
       shpFileName = shpFileName.replace(/\.shp$/, '');
+      if (map.getAllLayers().find(layer => layer.values_.id == shpFileName)) {
+        return;
+      }
       try {
         // GeoJSON 데이터를 파싱하고 Feature로 변환
         const geoJsonFormat = new ol.format.GeoJSON();
@@ -151,20 +149,21 @@ document.addEventListener('message', function (event) {
           type: 'FeatureCollection',
           features: shapefileData,
         });
+        console.log(features);
 
         // Point 스타일 설정
-        const pointStyle = new ol.style.Style({
-          image: new ol.style.Circle({
-            radius: 6,
-            fill: new ol.style.Fill({
-              color: 'red', // Point 색상
-            }),
-            stroke: new ol.style.Stroke({
-              color: 'black', // Point 테두리 색상
-              width: 2,
-            }),
-          }),
-        });
+        // const pointStyle = new ol.style.Style({
+        //   image: new ol.style.Circle({
+        //     radius: 8,
+        //     fill: new ol.style.Fill({
+        //       color: 'red', // Point 색상
+        //     }),
+        //     stroke: new ol.style.Stroke({
+        //       color: 'black', // Point 테두리 색상
+        //       width: 2,
+        //     }),
+        //   }),
+        // });
 
         // VectorLayer 생성 및 Feature 추가
         const vectorLayer = new ol.layer.Vector({
@@ -172,12 +171,13 @@ document.addEventListener('message', function (event) {
           source: new ol.source.Vector({
             features: features,
           }),
-          style: pointStyle, // Point 스타일 적용
+          visible : false,
+          // style: pointStyle, // Point 스타일 적용
         });
 
         map.addLayer(vectorLayer); // 위에서 생성한 지도에 레이어 추가
         // SHP 레이어를 목록에 추가
-        addLayerToLayerList(shpFileName, shpFileName);
+        addLayerToLayerList(shpFileName, shpFileName, folderName);
       } catch (error) {
         console.error('Error parsing shapefile:', error);
       }
@@ -188,12 +188,12 @@ document.addEventListener('message', function (event) {
 });
 
 // SHP 레이어를 목록에 추가
-function addLayerToLayerList(layerName, layerId) {
+function addLayerToLayerList(layerName, layerId, folderName) {
   const layerList = layerListData.querySelector('ol');
   const listItem = document.createElement('li');
   listItem.innerHTML = `
-    <input type="checkbox" onchange="layerVisible('${layerId}')" value="${layerId}" checked/>
-    <a>${layerName}</a>
+    <input type="checkbox" onchange="layerVisible('${layerId}')" value="${layerId}"/>
+    <a>${layerName} (${folderName}) </a>
   `;
   layerList.appendChild(listItem);
 }
@@ -222,7 +222,7 @@ const showSelectTooltip = event => {
   }
 
   if (insertOverlay.getElement().style.display == 'block') {
-    alert('저장 후 수정 가능합니다.');
+    toastAlert('저장 후 수정 가능합니다.');
     return;
   }
 
@@ -239,13 +239,23 @@ const showSelectTooltip = event => {
 
         let value = properties[key];
 
-        if (key === '현장사진') {
+        if (key === '현장사진1') {
           content += `<strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
+          content += `<input id="photo-text1" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
           if (value) {
-            content += `<img id="photo-display" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+            content += `<img id="photo-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
           } else {
-            content += `<img id="photo-display" style="width : 100%; height : auto;"/>`;
+            content += `<img id="photo-display1" style="width : 100%; height : auto;"/>`;
+          }
+          continue;
+        }
+        if (key === '현장사진2') {
+          content += `<strong class="surveyKey">${key}</strong>`;
+          content += `<input id="photo-text2" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
+          if (value) {
+            content += `<img id="photo-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+          } else {
+            content += `<img id="photo-display2" style="width : 100%; height : auto;"/>`;
           }
           continue;
         }
@@ -266,4 +276,14 @@ const showSelectTooltip = event => {
   }
 };
 
+const toastAlert = message => {
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({
+      type: 'SUCCESS_ALERT',
+      data: message,
+    }),
+  );
+};
+
 window.map = map;
+window.toastAlert = toastAlert;

@@ -35,7 +35,7 @@ function onConfirmClick() {
   loadingScreen.style.display = 'flex';
   updateGeojson();
 
-  alert('추가되었습니다.');
+  toastAlert('추가되었습니다.');
   loadingScreen.style.display = 'none';
 }
 

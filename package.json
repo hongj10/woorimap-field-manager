@@ -24,6 +24,7 @@
     "react-native-intent-launcher": "^0.2.1",
     "react-native-maps": "^1.7.1",
     "react-native-permissions": "^3.8.4",
+    "react-native-toast-message": "^2.1.6",
     "react-native-webview": "^13.3.1",
     "shapefile": "^0.6.6",
     "shpjs": "^4.0.4"

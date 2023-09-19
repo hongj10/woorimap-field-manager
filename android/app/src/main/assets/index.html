@@ -39,7 +39,10 @@
 <body>
   <header>
     <div class="header">
-      <div class="container">
+      <div class="container">			
+        <div class="logo">
+          <a href="/" style="width: 177px;height: 47px;background-size: contain;margin-top: 20px;"><h1 class="skip">현장조사프로그램</h1></a>
+        </div>
         <div class="utility">
           <!-- 로그인 하면 보여지는 부분 -->
           <div class="dropdown">
@@ -120,7 +123,7 @@
     </div>
     <!-- 센서 데이터를 표시할 엘리먼트 -->
     <div id="sensor-data"
-      style="position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;">
+      style="z-index: -1; position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;">
     </div>
     <div class="custom-button cancel" title="내 위치로 이동" onclick="moveMyLocation()" style="
     position: absolute;

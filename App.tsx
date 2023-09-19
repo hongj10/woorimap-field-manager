@@ -10,56 +10,7 @@ import { Geometry } from 'geojson';
 import { decode } from 'base-64'; // Import the decode function from base-64
 import IntentLauncher from 'react-native-intent-launcher'; // Import IntentLauncher
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'; // Import Permissions from react-native-permissions
-
-// const requestFilePermissions = async () => {
-//   try {
-//     const granted = await PermissionsAndroid.requestMultiple([
-//       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-//       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-//     ]);
-
-//     if (
-//       granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
-//         PermissionsAndroid.RESULTS.GRANTED &&
-//       granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
-//         PermissionsAndroid.RESULTS.GRANTED
-//     ) {
-//       console.log('You can read/write files');
-//       return true;
-//     } else {
-//       console.log('File read/write permission denied');
-//       return false;
-//     }
-//   } catch (err) {
-//     console.warn(err);
-//     return false;
-//   }
-// };
-
-// const requestFilePermissions = async () => {
-//   try {
-//     const result = await request(PERMISSIONS.ANDROID.MANAGE_EXTERNAL_STORAGE); // MANAGE_EXTERNAL_STORAGE 권한 요청
-//     if (result === RESULTS.GRANTED) {
-//       console.log('MANAGE_EXTERNAL_STORAGE permission granted');
-//       return true;
-//     } else {
-//       console.log('MANAGE_EXTERNAL_STORAGE permission denied');
-//       return false;
-//     }
-//   } catch (error) {
-//     console.warn(error);
-//     return false;
-//   }
-// };
-
-
-// const checkAndRequestPermissions = async () => {
-  // const hasPermissions = await requestFilePermissions();
-  // if (hasPermissions) {
-    // await checkFirstLaunch();
-    // await sendGeoJSONToWebView();
-  // }
-// };
+import Toast from 'react-native-toast-message';
 
 const packageName = DeviceInfo.getBundleId();
 
@@ -88,7 +39,8 @@ const checkFirstLaunch = async () => {
                 "도엽명":null,
                 "조사내용":null,
                 "주소":null,
-                "현장사진":null
+                "현장사진1":null,
+                "현장사진2":null
               }
             }
           ]
@@ -141,6 +93,13 @@ const App = () => {
     if (message.type === 'SAVE_GEOJSON' && message.data) {
       await saveGeoJSONToFile(message.data);
     }
+    if (message.type === 'SUCCESS_ALERT' && message.data) {
+      Toast.show({
+        type: 'success',
+        text1: '알림',
+        text2: message.data
+      });
+    }
   };
   
   const saveGeoJSONToFile = async (geoJSONString: string) => {
@@ -175,25 +134,32 @@ const App = () => {
   };
 
   const readShapefiles = async () => {
-    const shpDirectoryPath = `${RNFS.DownloadDirectoryPath}/wg-survey/shp`;
+    const shpBaseDirectoryPath = `${RNFS.DownloadDirectoryPath}/wg-survey/shp`; // 기본 SHP 디렉토리 경로
     try {
-      const shpFileNames = await RNFS.readdir(shpDirectoryPath);
-
-      // 각 SHP 파일을 GeoJSON으로 변환하여 지도에 표출
-      for (const shpFileName of shpFileNames) {
-        if (shpFileName.endsWith('.shp')) {
-          const shpFilePath = `${shpDirectoryPath}/${shpFileName}`;
-          // SHP 파일을 GeoJSON으로 변환
-          const geojsonData = await convertShpToGeoJSON(shpFilePath);
-
-          // 지도에 표출하는 함수 호출
-          displayGeoJSONOnMap(geojsonData, shpFileName);
+      const subfolders = await RNFS.readdir(shpBaseDirectoryPath); // 서브폴더 목록 가져오기
+  
+      // 각 서브폴더를 순회하며 SHP 파일 처리
+      for (const subfolderName of subfolders) {
+        const subfolderPath = `${shpBaseDirectoryPath}/${subfolderName}`;
+        const shpFileNames = await RNFS.readdir(subfolderPath);
+  
+        // 각 SHP 파일을 GeoJSON으로 변환하여 지도에 표출
+        for (const shpFileName of shpFileNames) {
+          if (shpFileName.endsWith('.shp')) {
+            const shpFilePath = `${subfolderPath}/${shpFileName}`;
+            // SHP 파일을 GeoJSON으로 변환
+            const geojsonData = await convertShpToGeoJSON(shpFilePath);
+  
+            // SHP 파일명과 폴더명을 함께 전달
+            const folderName = subfolderName; // 폴더명을 서브폴더 이름으로 사용
+            displayGeoJSONOnMap(geojsonData, shpFileName, folderName);
+          }
         }
       }
     } catch (error) {
       console.error('Error reading SHP files:', error);
     }
-  };
+  };  
 
   const convertBase64ToUint8Array = (base64: string) => {
     const binaryString = decode(base64); // Use decode from base-64 to decode the base64 string
@@ -220,12 +186,13 @@ const App = () => {
     }
   };
   
-  const displayGeoJSONOnMap = (geojsonData: Geometry[] | null, _shpFileName: string) => {
+  const displayGeoJSONOnMap = (geojsonData: Geometry[] | null, shpFileName: string, folderName: string) => {
     if (geojsonData) {
       const messageData = {
         type: 'LOAD_SHAPEFILE',
         shapefileData: geojsonData,
-        shpFileName: _shpFileName,
+        shpFileName,
+        folderName, // 폴더명 추가
       };
       webViewRef.current?.postMessage(JSON.stringify(messageData));
     }
@@ -251,6 +218,7 @@ const App = () => {
         allowUniversalAccessFromFileURLs={true}
         allowFileAccessFromFileURLs={true}
       />
+      <Toast />
     </View>
   );
 };

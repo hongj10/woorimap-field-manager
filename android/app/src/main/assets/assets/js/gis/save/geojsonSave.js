@@ -7,7 +7,7 @@ const saveFeature = () => {
         updateFeature.values_.features[0].values_[document.getElementsByClassName("surveyKey")[i].innerText] = document.getElementsByClassName("surveyValue")[i].value;
   }
   updateGeojson();
-  alert('저장되었습니다.');
+  toastAlert('저장되었습니다.');
   updateOverlay.getElement().style.display = 'none';
 };
 
