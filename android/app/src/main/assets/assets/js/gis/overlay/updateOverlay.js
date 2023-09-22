@@ -40,8 +40,8 @@ const showUpdateTooltip = event => {
           continue;
         }
         if (key === '현장사진2') {
-          content += `<strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
+          content += `<br/><strong class="surveyKey">${key}</strong>`;
+          content += `<input id="photo-text2" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
           if (value) {
             content += `<img id="photo-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
           } else {

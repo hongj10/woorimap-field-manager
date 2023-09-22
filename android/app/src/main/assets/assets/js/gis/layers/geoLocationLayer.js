@@ -46,4 +46,5 @@ setTimeout(function () {
     map.getView().setZoom(15);
     console.log(geoLocationLayer.getSource().getFeatures()[0].getGeometry().getCoordinates())
     map.getView().setCenter(geoLocationLayer.getSource().getFeatures()[0].getGeometry().getCoordinates());
+    document.getElementById('loading-screen').style.display = 'none';
 }, 3000);

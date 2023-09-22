@@ -129,11 +129,25 @@ document.addEventListener('message', function (event) {
     case 'LOAD_GEOJSON':
       if (!map.getAllLayers().find(layer => layer.values_.id == 'suveyLayer')) {
         displayGeoJSONOnMap(messageData.data);
-        document.getElementById('loading-screen').style.display = 'none';
+        // document.getElementById('loading-screen').style.display = 'none';
+        // document.getElementById('loadingOverlay').style.display = 'none';
       }
       console.log('LOAD_GEOJSON');
-
       break;
+      case 'LOAD_SHAPEFILELIST':
+        let _shpFileName = messageData.shpFileName;
+        let _folderName = messageData.folderName;
+        _shpFileName = _shpFileName.replace(/\.shp$/, '');
+        // if (map.getAllLayers().find(layer => layer.values_.id == _shpFileName)) {
+        //   return;
+        // }
+        try {
+          // SHP 레이어를 목록에 추가
+          addLayerToLayerList(_shpFileName, _shpFileName+_folderName, _folderName);
+        } catch (error) {
+          console.error('Error parsing shapefile:', error);
+        }
+        break;
     case 'LOAD_SHAPEFILE':
       const shapefileData = messageData.shapefileData;
       let shpFileName = messageData.shpFileName;
@@ -149,25 +163,10 @@ document.addEventListener('message', function (event) {
           type: 'FeatureCollection',
           features: shapefileData,
         });
-        console.log(features);
-
-        // Point 스타일 설정
-        // const pointStyle = new ol.style.Style({
-        //   image: new ol.style.Circle({
-        //     radius: 8,
-        //     fill: new ol.style.Fill({
-        //       color: 'red', // Point 색상
-        //     }),
-        //     stroke: new ol.style.Stroke({
-        //       color: 'black', // Point 테두리 색상
-        //       width: 2,
-        //     }),
-        //   }),
-        // });
 
         // VectorLayer 생성 및 Feature 추가
         const vectorLayer = new ol.layer.Vector({
-          id: shpFileName,
+          id: shpFileName+folderName,
           source: new ol.source.Vector({
             features: features,
           }),
@@ -176,24 +175,36 @@ document.addEventListener('message', function (event) {
         });
 
         map.addLayer(vectorLayer); // 위에서 생성한 지도에 레이어 추가
-        // SHP 레이어를 목록에 추가
-        addLayerToLayerList(shpFileName, shpFileName, folderName);
       } catch (error) {
         console.error('Error parsing shapefile:', error);
       }
+      break;
+      case 'HIDE_LOADING':
+        document.getElementById('loading-screen').style.display = 'none';
+      break;
+      case 'HIDE_LAYER_LOADING':
+        document.getElementById('loadingOverlay').style.display = 'none';
       break;
     default:
       console.log('Unknown message type');
   }
 });
 
-// SHP 레이어를 목록에 추가
+const addedLayers = {}; // 이미 추가한 레이어를 저장할 객체
 function addLayerToLayerList(layerName, layerId, folderName) {
   const layerList = layerListData.querySelector('ol');
+  // 중복을 확인하는 고유한 키 생성
+  const uniqueKey = `${layerName} (${folderName})`;
+  // 이미 추가된 레이어인지 확인
+  if (addedLayers[uniqueKey]) {
+    return;
+  }
+  // 객체에 고유한 키 추가
+  addedLayers[uniqueKey] = true;
   const listItem = document.createElement('li');
   listItem.innerHTML = `
     <input type="checkbox" onchange="layerVisible('${layerId}')" value="${layerId}"/>
-    <a>${layerName} (${folderName}) </a>
+    <a>${uniqueKey}</a>
   `;
   layerList.appendChild(listItem);
 }
@@ -250,7 +261,7 @@ const showSelectTooltip = event => {
           continue;
         }
         if (key === '현장사진2') {
-          content += `<strong class="surveyKey">${key}</strong>`;
+          content += `<br/><strong class="surveyKey">${key}</strong>`;
           content += `<input id="photo-text2" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
           if (value) {
             content += `<img id="photo-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
@@ -263,7 +274,7 @@ const showSelectTooltip = event => {
           value = '';
         }
         content += `<strong class="surveyKey">${key}</strong>`;
-        content += `<input class="surveyValue" type="text" value="${value}" readonly/><br/>`;
+        content += `<span class="surveyValue"/>${value}</span><br/>`;
       }
     }
 

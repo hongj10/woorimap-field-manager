@@ -18,7 +18,8 @@ const showInsertTooltip = event => {
   feature.values_['도엽명'] = '';
   feature.values_['조사내용'] = '';
   feature.values_['주소'] = '';
-  feature.values_['현장사진'] = '';
+  feature.values_['현장사진1'] = '';
+  feature.values_['현장사진2'] = '';
 
   document.getElementById('insert-overlay').innerHTML = content;
   insertOverlay.setPosition(event.target.sketchCoords_); // 툴팁 위치를 마우스 위치로 업데이트합니다.

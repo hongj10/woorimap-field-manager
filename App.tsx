@@ -120,16 +120,20 @@ const App = () => {
     ); // 앱의 외부 저장소 경로를 사용
     console.log('LOAD_GEOJSON');
     if (typeof data === 'string') {
+      // webViewRef.current?.postMessage(
+      //   JSON.stringify({
+      //     type: 'HIDE_LOADING',
+      //   }),
+      // );
       webViewRef.current?.postMessage(
         JSON.stringify({
           type: 'LOAD_GEOJSON',
           data,
         }),
-      );
+      );  
     } else {
       console.error('Failed to read GeoJSON data or permission denied.');
     }
-
     readShapefiles()
   };
 
@@ -159,6 +163,12 @@ const App = () => {
     } catch (error) {
       console.error('Error reading SHP files:', error);
     }
+
+    webViewRef.current?.postMessage(
+      JSON.stringify({
+        type: 'HIDE_LAYER_LOADING',
+      }),
+    );
   };  
 
   const convertBase64ToUint8Array = (base64: string) => {
@@ -188,13 +198,20 @@ const App = () => {
   
   const displayGeoJSONOnMap = (geojsonData: Geometry[] | null, shpFileName: string, folderName: string) => {
     if (geojsonData) {
-      const messageData = {
+      const shpListData = {
+        type: 'LOAD_SHAPEFILELIST',
+        shpFileName,
+        folderName, // 폴더명 추가
+      };
+      webViewRef.current?.postMessage(JSON.stringify(shpListData));
+
+      const shpFileData = {
         type: 'LOAD_SHAPEFILE',
         shapefileData: geojsonData,
         shpFileName,
         folderName, // 폴더명 추가
       };
-      webViewRef.current?.postMessage(JSON.stringify(messageData));
+      webViewRef.current?.postMessage(JSON.stringify(shpFileData));
     }
   };
   
