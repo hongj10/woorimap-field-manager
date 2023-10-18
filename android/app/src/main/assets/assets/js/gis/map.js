@@ -4,6 +4,7 @@ const defaultView = new ol.View({
   zoom: 13,
   minZoom: 6,
   maxZoom: 19,
+  constrainResolution: true, // 해상도 고정
 });
 
 const insertOverlay = new ol.Overlay({
@@ -18,10 +19,16 @@ const updateOverlay = new ol.Overlay({
   positioning: 'top-left',
 });
 
+const selectOverlay = new ol.Overlay({
+  element: document.getElementById('select-overlay'),
+  offset: [10, -10],
+  positioning: 'top-left',
+});
+
 const map = new ol.Map({
   layers: [baseLayer],
   target: 'map',
-  overlays: [insertOverlay, updateOverlay],
+  overlays: [insertOverlay, updateOverlay, selectOverlay],
   view: defaultView,
 });
 
@@ -60,10 +67,15 @@ function displayGeoJSONOnMap(geojsonData) {
     id: 'suveyLayer',
     source: vectorSource,
     style: new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 8,
-        fill: new ol.style.Fill({color: 'red'}),
-        stroke: new ol.style.Stroke({color: 'white', width: 2}),
+      // image: new ol.style.Circle({
+      //   radius: 8,
+      //   fill: new ol.style.Fill({color: 'red'}),
+      //   stroke: new ol.style.Stroke({color: 'white', width: 2}),
+      // }),
+      image: new ol.style.Icon({
+        // src: 'https://openlayers.org/en/latest/examples/data/icon.png',
+        src: 'assets/images/marker_building.png',
+        scale: 0.5,
       }),
     }),
   });
@@ -77,19 +89,83 @@ function displayGeoJSONOnMap(geojsonData) {
 
   modifyInteraction = new ol.interaction.Modify({
     source: vectorLayer?.getSource(),
+    // style: new ol.style.Style({
+    //   stroke: new ol.style.Stroke({ width: 8 }), // 변경할 테두리 색상 및 너비
+    // }),
   });
 
   selectInteraction = new ol.interaction.Select({
     source: vectorLayer?.getSource(),
+    // style: new ol.style.Style({
+    //   stroke: new ol.style.Stroke({ width: 8 }), // 변경할 테두리 색상 및 너비
+    // }),
   });
 
   map.addInteraction(selectInteraction);
 
-  selectInteraction.on('select', function (event) {
+  selectInteraction.on('select', async function (event) {
     if (event.selected.length > 0) {
-      showSelectTooltip(event);
+      const feature = event.target.getFeatures().getArray()[0];
+
+      if (feature?.values_ == undefined) {
+        return;
+      }
+      if (feature) {
+        const properties = feature.values_;
+        let content =
+          '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onSelectCancel()"></div>';
+          if(properties.주소==undefined){
+            selectInteraction.getFeatures().clear();
+            return
+          }
+        for (const key in properties) {
+          if (properties.hasOwnProperty(key)) {
+            if (key == 'geometry') {
+              continue;
+            }
+
+            let value = properties[key];
+
+            if (key === '현장사진1') {
+              content += `<strong class="surveySelectKey">${key}</strong>`;
+              if (value) {
+                content += `<img id="photo-select-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+              } else {
+                content += `<img id="photo-select-display1" style="width : 100%; height : auto;"/>`;
+              }
+              continue;
+            }
+            if (key === '현장사진2') {
+              content += `<br/><strong class="surveySelectKey">${key}</strong>`;
+              if (value) {
+                content += `<img id="photo-select-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+              } else {
+                content += `<img id="photo-select-display2" style="width : 100%; height : auto;"/>`;
+              }
+              continue;
+            }
+            if (value == null) {
+              value = '';
+            }
+              content += `<strong class="surveySelectKey">${key}</strong><br/>`;
+              if(value == ''){
+                content += `<br/>`;
+              }else{
+                content += `<span class="surveySelectValue">${value}</span><br/>`;
+              }
+          }
+        }
+
+        const selectOverlayElement = document.getElementById('select-overlay');
+        selectOverlayElement.innerHTML = content;
+        updateOverlay.getElement().style.display = 'none';
+        selectOverlay.setPosition(feature.values_.geometry.flatCoordinates);
+        selectOverlay.getElement().style.display = 'block';
+      } else {
+        selectOverlay.getElement().style.display = 'none';
+      }
     } else {
-      updateOverlay.getElement().style.display = 'none';
+      selectOverlay.getElement().style.display = 'none';
     }
   });
 
@@ -134,20 +210,24 @@ document.addEventListener('message', function (event) {
       }
       console.log('LOAD_GEOJSON');
       break;
-      case 'LOAD_SHAPEFILELIST':
-        let _shpFileName = messageData.shpFileName;
-        let _folderName = messageData.folderName;
-        _shpFileName = _shpFileName.replace(/\.shp$/, '');
-        // if (map.getAllLayers().find(layer => layer.values_.id == _shpFileName)) {
-        //   return;
-        // }
-        try {
-          // SHP 레이어를 목록에 추가
-          addLayerToLayerList(_shpFileName, _shpFileName+_folderName, _folderName);
-        } catch (error) {
-          console.error('Error parsing shapefile:', error);
-        }
-        break;
+    case 'LOAD_SHAPEFILELIST':
+      let _shpFileName = messageData.shpFileName;
+      let _folderName = messageData.folderName;
+      _shpFileName = _shpFileName.replace(/\.shp$/, '');
+      // if (map.getAllLayers().find(layer => layer.values_.id == _shpFileName)) {
+      //   return;
+      // }
+      try {
+        // SHP 레이어를 목록에 추가
+        addLayerToLayerList(
+          _shpFileName,
+          _shpFileName + _folderName,
+          _folderName,
+        );
+      } catch (error) {
+        console.error('Error parsing shapefile:', error);
+      }
+      break;
     case 'LOAD_SHAPEFILE':
       const shapefileData = messageData.shapefileData;
       let shpFileName = messageData.shpFileName;
@@ -166,11 +246,12 @@ document.addEventListener('message', function (event) {
 
         // VectorLayer 생성 및 Feature 추가
         const vectorLayer = new ol.layer.Vector({
-          id: shpFileName+folderName,
+          id: shpFileName + folderName,
           source: new ol.source.Vector({
             features: features,
           }),
-          visible : false,
+          minZoom: 15, // 최대 줌 레벨 설정
+          visible: false,
           // style: pointStyle, // Point 스타일 적용
         });
 
@@ -179,11 +260,14 @@ document.addEventListener('message', function (event) {
         console.error('Error parsing shapefile:', error);
       }
       break;
-      case 'HIDE_LOADING':
-        document.getElementById('loading-screen').style.display = 'none';
+    // case 'HIDE_LOADING':
+    //   document.getElementById('loading-screen').style.display = 'none';
+    case 'SHOW_ALERT':
+      alert('어플리케이션을 재시작해주세요.');
+
       break;
-      case 'HIDE_LAYER_LOADING':
-        document.getElementById('loadingOverlay').style.display = 'none';
+    case 'HIDE_LAYER_LOADING':
+      document.getElementById('loadingOverlay').style.display = 'none';
       break;
     default:
       console.log('Unknown message type');
@@ -223,70 +307,6 @@ function moveMyLocation() {
   map.getView().setZoom(16);
 }
 
-const showSelectTooltip = event => {
-  const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
-    return feature;
-  });
-
-  if (feature?.values_.features == undefined) {
-    return;
-  }
-
-  if (insertOverlay.getElement().style.display == 'block') {
-    toastAlert('저장 후 수정 가능합니다.');
-    return;
-  }
-
-  if (feature) {
-    const properties = feature.values_.features[0].values_;
-    let content =
-      '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onInsertCancel()"></div>';
-
-    for (const key in properties) {
-      if (properties.hasOwnProperty(key)) {
-        if (key == 'geometry') {
-          continue;
-        }
-
-        let value = properties[key];
-
-        if (key === '현장사진1') {
-          content += `<strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text1" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
-          if (value) {
-            content += `<img id="photo-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
-          } else {
-            content += `<img id="photo-display1" style="width : 100%; height : auto;"/>`;
-          }
-          continue;
-        }
-        if (key === '현장사진2') {
-          content += `<br/><strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text2" style="display: none;" class="surveyValue" type="text" value="${value}" readonly/>`;
-          if (value) {
-            content += `<img id="photo-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
-          } else {
-            content += `<img id="photo-display2" style="width : 100%; height : auto;"/>`;
-          }
-          continue;
-        }
-        if (value == null) {
-          value = '';
-        }
-        content += `<strong class="surveyKey">${key}</strong>`;
-        content += `<span class="surveyValue"/>${value}</span><br/>`;
-      }
-    }
-
-    const updateOverlayElement = document.getElementById('update-overlay');
-    updateOverlayElement.innerHTML = content;
-    updateOverlay.getElement().style.display = 'block';
-    insertOverlay.getElement().style.display = 'none';
-  } else {
-    updateOverlay.getElement().style.display = 'none';
-  }
-};
-
 const toastAlert = message => {
   window.ReactNativeWebView.postMessage(
     JSON.stringify({
@@ -296,5 +316,11 @@ const toastAlert = message => {
   );
 };
 
+function onSelectCancel() {
+  selectInteraction.getFeatures().clear();
+  selectOverlay.getElement().style.display = 'none';
+}
+
 window.map = map;
+window.onSelectCancel = onSelectCancel;
 window.toastAlert = toastAlert;

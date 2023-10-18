@@ -1,7 +1,10 @@
 const saveFeature = () => {
-  console.log()
   for(let i=0; i<document.getElementsByClassName("surveyKey").length; i++){
         if(document.getElementsByClassName("surveyKey")[i].innerText=='geometry'){
+          continue;
+        }
+        if(document.getElementsByClassName("surveyKey")[i].innerText=='주소'){
+          updateFeature.values_.features[0].values_[document.getElementsByClassName("surveyKey")[i].innerText] = document.getElementsByClassName("surveyValue")[i].innerText;
           continue;
         }
         updateFeature.values_.features[0].values_[document.getElementsByClassName("surveyKey")[i].innerText] = document.getElementsByClassName("surveyValue")[i].value;

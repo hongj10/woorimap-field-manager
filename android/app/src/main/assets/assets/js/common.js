@@ -1,6 +1,6 @@
 // 모바일 메뉴
 $(window).load(function () {
-  $(".hamburger, .nav-close").click(function () {
+  $(".hamburger, .nav-close, .nav-overlay").click(function () {
     $(".hamburger, .nav-overlay, .m-nav, .nav-close").toggleClass("active");
     if ($(".nav-overlay").hasClass("active")) {
       $(".nav-overlay").fadeIn();

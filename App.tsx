@@ -12,82 +12,119 @@ import IntentLauncher from 'react-native-intent-launcher'; // Import IntentLaunc
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'; // Import Permissions from react-native-permissions
 import Toast from 'react-native-toast-message';
 
-const packageName = DeviceInfo.getBundleId();
+const App = () => {
+  const webViewRef = useRef<WebView>(null);
+  const packageName = DeviceInfo.getBundleId();
 
-const requestManageExternalStoragePermission = () => {
-  IntentLauncher.startActivity({
-    action: 'android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION',
-    data: `package:${packageName}`,
-  });
-};
-
-const checkFirstLaunch = async () => {
+  const requestManageExternalStoragePermission = () => {
+    IntentLauncher.startActivity({
+      action: 'android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION',
+      data: `package:${packageName}`,
+    });
+  };
+  
+  const requestFilePermissions = async () => {
   try {
-    const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
-    if (isFirstLaunch === null) {
-      await requestManageExternalStoragePermission();
-        const geoJsonContent = `{
-          "type":"FeatureCollection",
-          "features":[
-            {
-              "type":"Feature",
-              "geometry":{
-                "type":"Point",
-                "coordinates":[950788.9055305821, 1951939.113108684]
-              },
-              "properties":{
-                "도엽명":null,
-                "조사내용":null,
-                "주소":null,
-                "현장사진1":null,
-                "현장사진2":null
-              }
-            }
-          ]
-        }`;
+    const granted = await PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    ]);
 
-        const folderWgExists = await RNFS.exists(
-          `${RNFS.DownloadDirectoryPath}/wg-survey`,
-        );
-        if (!folderWgExists) {
-          await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey`);
-        }
-        // 폴더가 없으면 생성합니다.
-        const folderGeoExists = await RNFS.exists(
-          `${RNFS.DownloadDirectoryPath}/wg-survey/geojson`,
-        );
-        if (!folderGeoExists) {
-          await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/geojson`);
-        }
-        const folderShpExists = await RNFS.exists(
-          `${RNFS.DownloadDirectoryPath}/wg-survey/shp`,
-        );
-        if (!folderShpExists) {
-          await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/shp`);
-        }
-        const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
-        await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
-        await AsyncStorage.setItem('isFirstLaunch', 'false'); // 최초 실행 상태 저장
+    if (
+      granted[PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE] ===
+        PermissionsAndroid.RESULTS.GRANTED &&
+      granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
+        PermissionsAndroid.RESULTS.GRANTED
+    ) {
+      console.log('You can read/write files');
+      return true;
+    } else {
+      console.log('File read/write permission denied');
+      return false;
     }
-  } catch (error) {
-    console.error("Failed to check app's first launch: ", error);
+  } catch (err) {
+    console.warn(err);
+    return false;
   }
 };
 
-const readGeoJSONFile = async (filePath: string) => {
-  // if (await requestFilePermissions()) {
+  const checkFirstLaunch = async () => {
     try {
-      const geojsonData = await RNFS.readFile(filePath, 'utf8');
-      return geojsonData;
+      const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
+      if (isFirstLaunch === null) {
+        requestManageExternalStoragePermission();
+        requestFilePermissions();
+          const geoJsonContent = `{
+            "type":"FeatureCollection",
+            "features":[
+              {
+                "type":"Feature",
+                "geometry":{
+                  "type":"Point",
+                  "coordinates":[950788.9055305821, 1951939.113108684]
+                },
+                "properties":{
+                  "도엽명":null,
+                  "조사내용":null,
+                  "주소":null,
+                  "현장사진1":null,
+                  "현장사진2":null
+                }
+              }
+            ]
+          }`;
+          
+          const folderWgExists = await RNFS.exists(
+            `${RNFS.DownloadDirectoryPath}/wg-survey`,
+          );
+          if (!folderWgExists) {
+            await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey`);
+          }
+          // 폴더가 없으면 생성합니다.
+          const folderGeoExists = await RNFS.exists(
+            `${RNFS.DownloadDirectoryPath}/wg-survey/geojson`,
+          );
+          if (!folderGeoExists) {
+            await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/geojson`);
+          }
+          const folderShpExists = await RNFS.exists(
+            `${RNFS.DownloadDirectoryPath}/wg-survey/shp`,
+          );
+          if (!folderShpExists) {
+            await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/shp`);
+          }
+          const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
+          await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
+          
+          await AsyncStorage.setItem('isFirstLaunch', 'false'); // 최초 실행 상태 저장
+          showAlert()
+      }
     } catch (error) {
-      console.error(error);
-      return null;
+      showAlert()
+      console.error("Failed to check app's first launch: ", error);
     }
-  // }
-};
-
-const App = () => {
-  const webViewRef = useRef<WebView>(null);
+  };
+  
+  const readGeoJSONFile = async (filePath: string) => {
+    // if (await requestFilePermissions()) {
+      try {
+        const geojsonData = await RNFS.readFile(filePath, 'utf8');
+        return geojsonData;
+      } catch (error) {
+        showAlert()
+        console.error(error);
+        return null;
+      }
+    // }
+  };
+  
+  const showAlert = () => {
+    webViewRef.current?.postMessage(
+      JSON.stringify({
+        type: 'SHOW_ALERT',
+      }),
+    );
+  }
   const handleMessage = async (event: {nativeEvent: {data: string}}) => {
     const message = JSON.parse(event.nativeEvent.data);
     if (message.type === 'SAVE_GEOJSON' && message.data) {
@@ -118,20 +155,19 @@ const App = () => {
     const data = await readGeoJSONFile(
       `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`,
     ); // 앱의 외부 저장소 경로를 사용
+    try  {
     console.log('LOAD_GEOJSON');
     if (typeof data === 'string') {
-      // webViewRef.current?.postMessage(
-      //   JSON.stringify({
-      //     type: 'HIDE_LOADING',
-      //   }),
-      // );
       webViewRef.current?.postMessage(
         JSON.stringify({
           type: 'LOAD_GEOJSON',
           data,
         }),
       );  
-    } else {
+    }
+  }
+    catch (error) {
+      showAlert()
       console.error('Failed to read GeoJSON data or permission denied.');
     }
     readShapefiles()
@@ -191,6 +227,7 @@ const App = () => {
   
       return geojsonData;
     } catch (error) {
+      showAlert()
       console.error('Error converting SHP to GeoJSON:', error);
       return null;
     }
@@ -215,14 +252,14 @@ const App = () => {
     }
   };
   
-  useEffect(() => {
-    const initializeApp = async () => {
-      await checkFirstLaunch();
-      await sendGeoJSONToWebView();
-    };
+  // useEffect(() => {
+  //   const initializeApp = async () => {
+  //     // await checkFirstLaunch();
+  //     // await sendGeoJSONToWebView();
+  //   };
 
-    initializeApp();
-  }, []);
+  //   initializeApp();
+  // }, []);
   return (
     <View style={{flex: 1}}>
       <WebView
@@ -232,6 +269,7 @@ const App = () => {
         source={{uri: 'file:///android_asset/index.html'}}
         onMessage={handleMessage}
         onLoad={sendGeoJSONToWebView}
+        onLoadStart={checkFirstLaunch}
         allowUniversalAccessFromFileURLs={true}
         allowFileAccessFromFileURLs={true}
       />
@@ -241,7 +279,3 @@ const App = () => {
 };
 
 export default App;
-
-function sendGeoJSONToWebView() {
-  throw new Error('Function not implemented.');
-}

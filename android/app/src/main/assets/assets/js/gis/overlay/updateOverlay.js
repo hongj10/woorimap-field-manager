@@ -1,8 +1,6 @@
-// import { insertOverlay, updateOverlay } from "../map.js";
-
 let updateFeature;
 let tempFeature;
-const showUpdateTooltip = event => {
+const showUpdateTooltip = async event => {
   const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
     return feature;
   });
@@ -18,8 +16,8 @@ const showUpdateTooltip = event => {
     const properties = feature.values_.features[0].values_;
     updateFeature = feature;
 
-    let content = '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onInsertCancel()"></div>';
-
+    let content = '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onUpdateCancel()"></div>';
+    
     for (const key in properties) {
       if (properties.hasOwnProperty(key)) {
         if (key == 'geometry') {
@@ -30,22 +28,22 @@ const showUpdateTooltip = event => {
 
         if (key === '현장사진1') {
           content += `<strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text1" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
+          content += `<input id="photo-update-text1" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
           if (value) {
-            content += `<img id="photo-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+            content += `<img id="photo-update-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
           } else {
-            content += `<img id="photo-display1" style="width : 100%; height : auto;"/>`;
+            content += `<img id="photo-update-display1" style="width : 100%; height : auto;"/>`;
           }
           content += `<button onclick="takePhoto1()">사진 찍기</button>`;
           continue;
         }
         if (key === '현장사진2') {
           content += `<br/><strong class="surveyKey">${key}</strong>`;
-          content += `<input id="photo-text2" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
+          content += `<input id="photo-update-text2" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
           if (value) {
-            content += `<img id="photo-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+            content += `<img id="photo-update-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
           } else {
-            content += `<img id="photo-display2" style="width : 100%; height : auto;"/>`;
+            content += `<img id="photo-update-display2" style="width : 100%; height : auto;"/>`;
           }
           content += `<button onclick="takePhoto2()">사진 찍기</button>`;
           continue;
@@ -53,8 +51,13 @@ const showUpdateTooltip = event => {
         if (value == null) {
           value = '';
         }
-        content += `<strong class="surveyKey">${key}</strong>`;
-        content += `<input class="surveyValue" type="text" value="${value}"/><br/>`;
+        if (key === '주소') {
+          content += `<strong class="surveyKey">${key}</strong><br/>`;
+          content += `<span class="surveyValue">${value}</span><br/>`;
+        } else{
+          content += `<strong class="surveyKey">${key}</strong><br/>`;
+          content += `<input class="surveyValue" type="text" value="${value}"/><br/>`;
+        }
       }
     }
 
@@ -72,7 +75,7 @@ const showUpdateTooltip = event => {
   }
 };
 
-function onInsertCancel() {
+function onUpdateCancel() {
   updateOverlay.getElement().style.display = 'none';
 }
 
@@ -93,13 +96,13 @@ function deleteFeature() {
 
 function displayPhoto1(imageDataURI) {
   // 이미지를 보여줄 엘리먼트를 가져옴
-  const photoDisplayElement = document.getElementById('photo-display1');
+  const photoDisplayElement = document.getElementById('photo-update-display1');
   photoDisplayElement.src = imageDataURI;
 }
 
 function displayPhoto2(imageDataURI) {
   // 이미지를 보여줄 엘리먼트를 가져옴
-  const photoDisplayElement = document.getElementById('photo-display2');
+  const photoDisplayElement = document.getElementById('photo-update-display2');
   photoDisplayElement.src = imageDataURI;
 }
 
@@ -114,7 +117,7 @@ function takePhoto1() {
     try {
       const compressedBase64Image = await compressImage(file);
       displayPhoto1(compressedBase64Image);
-      const photoTextElement = document.getElementById('photo-text1');
+      const photoTextElement = document.getElementById('photo-update-text1');
       photoTextElement.value = compressedBase64Image;
       console.log(file);
     } catch (error) {
@@ -135,7 +138,7 @@ function takePhoto2() {
     try {
       const compressedBase64Image = await compressImage(file);
       displayPhoto2(compressedBase64Image);
-      const photoTextElement = document.getElementById('photo-text2');
+      const photoTextElement = document.getElementById('photo-update-text2');
       photoTextElement.value = compressedBase64Image;
       console.log(file);
     } catch (error) {
@@ -194,4 +197,4 @@ function compressImage(file) {
   });
 }
 
-window.onInsertCancel = onInsertCancel;
+window.onUpdateCancel = onUpdateCancel;

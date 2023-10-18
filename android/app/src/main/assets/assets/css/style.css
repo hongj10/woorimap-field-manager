@@ -6355,7 +6355,7 @@ article>.container {
   vertical-align: middle;
   z-index: 5000;
   right: 10px;
-  bottom: 0px;
+  bottom: 20px;
 }
 
 /* Hide default HTML checkbox */
@@ -6448,6 +6448,7 @@ p {
   font-size: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   display: none;
+  min-width: 170px;
   /* 처음에는 숨깁니다. */
 }
 
@@ -6458,6 +6459,18 @@ p {
   padding: 5px;
   font-size: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  display: none;
+  /* 처음에는 숨깁니다. */
+}
+
+#select-overlay {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  padding: 5px;
+  font-size: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  min-width: 170px;
   display: none;
   /* 처음에는 숨깁니다. */
 }
@@ -6570,5 +6583,5 @@ p {
 }
 
 .ol-compass {
-  background: url(../images/tool_sprite.png) no-repeat 0 0 !important;
+  background: url(../images/tool_sprite.png) !important;
 }

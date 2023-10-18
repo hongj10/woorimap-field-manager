@@ -3,7 +3,7 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>현장조사 모바일 앱</title>
   <meta name="title" content="현장조사 모바일 앱" />
@@ -39,9 +39,11 @@
 <body>
   <header>
     <div class="header">
-      <div class="container">			
+      <div class="container">
         <div class="logo">
-          <a href="/" style="width: 177px;height: 47px;background-size: contain;margin-top: 20px;"><h1 class="skip">현장조사프로그램</h1></a>
+          <a href="/" style="width: 177px;height: 47px;background-size: contain;margin-top: 20px;">
+            <h1 class="skip">현장조사프로그램</h1>
+          </a>
         </div>
         <div class="utility">
           <!-- 로그인 하면 보여지는 부분 -->
@@ -111,10 +113,10 @@
             <li><input id="layer2ListCheck" type="checkbox" onchange="layerVisible(this)" value="N3P_F0020000" checked/>
               <a id="layer2List">N3P_F0020000</a></li>
           </ol> -->
-          <div class="loading-overlay" id="loadingOverlay">
-            <!-- <div class="loading-spinner"></div> -->
-            <p>레이어 목록 로딩 중...</p>
-          </div>
+        <div class="loading-overlay" id="loadingOverlay">
+          <!-- <div class="loading-spinner"></div> -->
+          <p>레이어 목록 로딩 중...</p>
+        </div>
       </div>
     </div>
     <div class="nav-overlay"></div>
@@ -125,13 +127,15 @@
     </div>
     <div id="update-overlay">
     </div>
+    <div id="select-overlay">
+    </div>
     <!-- 센서 데이터를 표시할 엘리먼트 -->
     <div id="sensor-data"
       style="z-index: -1; position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;">
     </div>
     <div class="custom-button cancel" title="내 위치로 이동" onclick="moveMyLocation()" style="
     position: absolute;
-    bottom: 50px;
+    bottom: 65px;
     right: 10px;
     z-index: 1;
     width: 58px;
@@ -140,9 +144,15 @@
 ">
       내 위치
     </div>
-    <label class="switch">
+    <label class="switch" style="right: 10px;">
       <input id="drawSwitch" type="checkbox" />
       <span class="slider round"></span>
+      <span style="
+position: absolute;
+    top: 40px;
+    font-size: 11px;
+    right: 0px;
+">조사정보입력</span>
     </label>
   </div>
   <a class="scrollup" title="가장위로"></a>

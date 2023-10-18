@@ -1,8 +1,8 @@
 let lastInsertedFeature = null;
 
-const showInsertTooltip = event => {
+const showInsertTooltip = async event => {
   if (insertOverlay.getElement().style.display == 'block') {
-    onUpdateCancel();
+    onInsertCancel();
   }
   const feature = event.feature;
   lastInsertedFeature = feature;
@@ -12,15 +12,15 @@ const showInsertTooltip = event => {
   content +=
     '<button class="custom-button" onclick="onConfirmClick()">확인</button>';
   content +=
-    '<button class="custom-button cancel" onclick="onUpdateCancel()">취소</button>';
+    '<button class="custom-button cancel" onclick="onInsertCancel()">취소</button>';
   content += '</div>';
-
+  const coordAddress = await searchCoord(feature.values_.geometry.flatCoordinates);
   feature.values_['도엽명'] = '';
   feature.values_['조사내용'] = '';
-  feature.values_['주소'] = '';
+  feature.values_['주소'] = coordAddress;
   feature.values_['현장사진1'] = '';
   feature.values_['현장사진2'] = '';
-
+  
   document.getElementById('insert-overlay').innerHTML = content;
   insertOverlay.setPosition(event.target.sketchCoords_); // 툴팁 위치를 마우스 위치로 업데이트합니다.
   insertOverlay.getElement().style.display = 'block'; // 툴팁을 표시합니다.
@@ -40,7 +40,7 @@ function onConfirmClick() {
   loadingScreen.style.display = 'none';
 }
 
-function onUpdateCancel() {
+function onInsertCancel() {
   if (lastInsertedFeature) {
     map
       .getAllLayers()
@@ -53,4 +53,4 @@ function onUpdateCancel() {
 }
 
 window.onConfirmClick = onConfirmClick;
-window.onUpdateCancel = onUpdateCancel;
+window.onInsertCancel = onInsertCancel;
