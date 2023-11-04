@@ -1,9 +1,9 @@
 let updateFeature;
 let tempFeature;
 const showUpdateTooltip = async event => {
-  const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
-    return feature;
-  });
+  console.log(modifyInteraction.vertexFeature_);
+  
+  const feature = modifyInteraction.vertexFeature_;
   if (feature?.values_.features == undefined) {
     return;
   }

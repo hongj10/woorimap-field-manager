@@ -14,7 +14,7 @@ const showInsertTooltip = async event => {
   content +=
     '<button class="custom-button cancel" onclick="onInsertCancel()">취소</button>';
   content += '</div>';
-  const coordAddress = await searchCoord(feature.values_.geometry.flatCoordinates);
+  const coordAddress = await searchCoord(feature.values_?.geometry.flatCoordinates);
   feature.values_['도엽명'] = '';
   feature.values_['조사내용'] = '';
   feature.values_['주소'] = coordAddress;
@@ -38,6 +38,86 @@ function onConfirmClick() {
 
   toastAlert('추가되었습니다.');
   loadingScreen.style.display = 'none';
+  console.log('lastInsertedFeature',lastInsertedFeature);
+  if (modifyInteraction) {
+    // feature modifyInteraction에 선택될 수 있도록 변경
+    // showUpdateTooltip();
+    modifyInteraction.vertexFeature_ = lastInsertedFeature;
+    console.log(lastInsertedFeature);
+    
+    
+    if (lastInsertedFeature) {
+      tempFeature = lastInsertedFeature
+      const properties = lastInsertedFeature.values_;
+      updateFeature = {
+        values_:{
+          features:[{
+            values_:properties
+          }]
+        }
+      }
+  
+      let content = '<h5>현장 정보</h5><div class="overlayClose close2" onclick="onUpdateCancel()"></div>';
+      
+      for (const key in properties) {
+        if (properties.hasOwnProperty(key)) {
+          if (key == 'geometry') {
+            continue;
+          }
+  
+          let value = properties[key];
+  
+          if (key === '현장사진1') {
+            content += `<strong class="surveyKey">${key}</strong>`;
+            content += `<input id="photo-update-text1" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
+            if (value) {
+              content += `<img id="photo-update-display1" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+            } else {
+              content += `<img id="photo-update-display1" style="width : 100%; height : auto;"/>`;
+            }
+            content += `<button onclick="takePhoto1()">사진 찍기</button>`;
+            continue;
+          }
+          if (key === '현장사진2') {
+            content += `<br/><strong class="surveyKey">${key}</strong>`;
+            content += `<input id="photo-update-text2" style="display: none;" class="surveyValue" type="text" value="${value}" />`;
+            if (value) {
+              content += `<img id="photo-update-display2" src="${value}" style="width : 100%; height : auto;" alt="사진" />`;
+            } else {
+              content += `<img id="photo-update-display2" style="width : 100%; height : auto;"/>`;
+            }
+            content += `<button onclick="takePhoto2()">사진 찍기</button>`;
+            continue;
+          }
+          if (value == null) {
+            value = '';
+          }
+          if (key === '주소') {
+            content += `<strong class="surveyKey">${key}</strong><br/>`;
+            content += `<span class="surveyValue">${value}</span><br/>`;
+          } else{
+            content += `<strong class="surveyKey">${key}</strong><br/>`;
+            content += `<input class="surveyValue" type="text" value="${value}"/><br/>`;
+          }
+        }
+      }
+  
+      content += `<div class="button-container">
+      <button class="custom-button" onclick="saveFeature()">저장</button>
+      <button class="custom-button cancel" onclick="deleteFeature()">삭제</button>
+    </div>`;
+      const updateOverlayElement = document.getElementById('update-overlay');
+      updateOverlayElement.innerHTML = content; // Update overlay content
+      updateOverlay.setPosition(lastInsertedFeature.values_.geometry.flatCoordinates);
+      updateOverlay.getElement().style.display = 'block';
+      insertOverlay.getElement().style.display = 'none';
+    }
+
+    console.log(modifyInteraction)
+
+
+  }
+  
 }
 
 function onInsertCancel() {

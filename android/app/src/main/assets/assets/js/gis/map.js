@@ -321,6 +321,16 @@ function onSelectCancel() {
   selectOverlay.getElement().style.display = 'none';
 }
 
+function shpDownload() {
+  const format = new ol.format.GeoJSON({featureProjection: 'EPSG:5186'});
+  const download = document.getElementById('download');
+  const features = map.getAllLayers().find(layer => layer.values_.id == 'suveyLayer').getSource().getFeatures();
+  const json = format.writeFeatures(features);
+  download.href =
+    'data:application/json;charset=utf-8,' + encodeURIComponent(json);
+}
+
 window.map = map;
 window.onSelectCancel = onSelectCancel;
 window.toastAlert = toastAlert;
+window.shpDownload = shpDownload;

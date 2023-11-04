@@ -20,8 +20,10 @@ const searchCoord = async coord => {
   
   try {
     const response = await fetch(url);
+    console.log('response', response)
     const data = await response.json();
-    return data.response.result[0].text;
+    console.log('data', data)
+    return data?.response.result[0].text;
   } catch (error) {
     console.error('Error fetching data:', error);
     return '';

@@ -11,6 +11,7 @@ import { decode } from 'base-64'; // Import the decode function from base-64
 import IntentLauncher from 'react-native-intent-launcher'; // Import IntentLauncher
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions'; // Import Permissions from react-native-permissions
 import Toast from 'react-native-toast-message';
+import RNRestart from 'react-native-restart';
 
 const App = () => {
   const webViewRef = useRef<WebView>(null);
@@ -36,6 +37,7 @@ const App = () => {
       granted[PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE] ===
         PermissionsAndroid.RESULTS.GRANTED
     ) {
+      RNRestart.Restart();
       console.log('You can read/write files');
       return true;
     } else {
@@ -51,6 +53,7 @@ const App = () => {
   const checkFirstLaunch = async () => {
     try {
       const isFirstLaunch = await AsyncStorage.getItem('isFirstLaunch');
+      console.log('isFirstLaunch', isFirstLaunch);
       if (isFirstLaunch === null) {
         requestManageExternalStoragePermission();
         requestFilePermissions();
@@ -93,11 +96,20 @@ const App = () => {
           if (!folderShpExists) {
             await RNFS.mkdir(`${RNFS.DownloadDirectoryPath}/wg-survey/shp`);
           }
-          const filePath = `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`;
-          await RNFS.writeFile(filePath, geoJsonContent, 'utf8');
+          // survey.geojson이 없으면 생성합니다.
+          const fileExists = await RNFS.exists(
+            `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`,
+          );
+          if (!fileExists) {
+            await RNFS.writeFile(
+              `${RNFS.DownloadDirectoryPath}/wg-survey/geojson/survey.geojson`,
+              geoJsonContent,
+              'utf8',
+            );
+          }
           
           await AsyncStorage.setItem('isFirstLaunch', 'false'); // 최초 실행 상태 저장
-          showAlert()
+          RNRestart.Restart();
       }
     } catch (error) {
       showAlert()
