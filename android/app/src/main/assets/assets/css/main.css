@@ -86,7 +86,7 @@ section.sec-2 .copy .lg + .sm { margin-top: 26px; }
 .bigdata-trend .left .btn { background-color: #f6f6f6; color: #888;  width: 120px !important; border-radius: 1em;}
 .bigdata-trend .left .btn + .btn { margin-top: .7rem; }
 .bigdata-trend .left .btn:hover, .bigdata-trend > div:nth-child(1) .btn:focus { background-color: #f1f1f1; transition-duration: 250ms; }
-.bigdata-trend .left .btn.active { background-color: #05adb6; color: #fff; cursor: default; }
+.bigdata-trend .left .btn.active { background-color: #058cb6; color: #fff; cursor: default; }
 .bigdata-trend .right .wrap { padding: .9rem 1.3rem; border: 1px solid #E7E7E7; border-radius: .7rem; display: flex; flex-wrap: wrap; }
 .bigdata-trend .right .wrap .rank:nth-child(1) .district i { background-color: #04889D; color: #fff; }
 .bigdata-trend .right .wrap .rank:nth-child(1) .district strong { color: #04889D; }

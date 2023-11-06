@@ -77,7 +77,9 @@
       </div>
       <div class="bigdata-trend">
         <div class="row">
-          <a style="cursor: pointer;padding: 0.65rem 0.5rem;background-color: #0576b6;color: white;margin-bottom: 10px;width: 100%;text-align: center;" class="btn-rounded " id="download" onclick="shpDownload()" type="button" download="현장조사정보.geojson">현장조사 정보 다운로드</a>
+          <a style="cursor: pointer;padding: 0.65rem 0.5rem;background-color: #0576b6;color: white;margin-bottom: 10px;width: 93%;margin-left: 9px;text-align: center;"
+            class="btn-rounded " id="download" onclick="shpDownload()" type="button" download="현장조사정보.geojson">현장조사 정보
+            다운로드</a>
           <div class="left">
             <a type="button" id="layerSearch" onclick="statChange(this)" class="btn btn-rounded changeItem active"
               style="cursor: pointer;">주소 검색</a>
@@ -133,19 +135,12 @@
     <!-- 센서 데이터를 표시할 엘리먼트 -->
     <div id="sensor-data"
       style="z-index: -1; position: absolute; top: 10px; left: 10px; background-color: rgba(255, 255, 255, 0.8); padding: 10px;">
-    </div>
-    <div class="custom-button cancel" title="내 위치로 이동" onclick="moveMyLocation()" style="
-    position: absolute;
-    bottom: 65px;
-    right: 10px;
-    z-index: 1;
-    width: 58px;
-    padding-left: 8px;
-    padding-right: 2px;
-">
-      내 위치
-    </div>
-    <label class="switch" style="right: 10px;">
+    </div>    
+    <button class="loaction-button" onclick="moveMyLocation()"></button>
+    <button id="interaction-button" onclick="onInteractionEvt(this)"></button>
+    
+    
+    <!-- <label class="switch" style="right: 10px;">
       <input id="drawSwitch" type="checkbox" />
       <span class="slider round"></span>
       <span style="
@@ -154,7 +149,9 @@ position: absolute;
     font-size: 11px;
     right: 0px;
 ">조사정보입력</span>
-    </label>
+    </label> -->
+
+
   </div>
   <a class="scrollup" title="가장위로"></a>
 

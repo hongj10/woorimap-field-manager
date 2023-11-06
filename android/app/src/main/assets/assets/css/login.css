@@ -6,7 +6,8 @@ article .container {
 
 /* 로그인 */
 .login {
-  height: 100vh;
+  height: 102vh;
+  width: 102vw;
   padding-top: 10%;
   background: #1666fb;
   background: linear-gradient(135deg, #1666fb 0%, #4eca8e 100%),
@@ -23,16 +24,20 @@ article .container {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 75px;
 }
 .login .form-area {
   width: 80%;
 }
 .login .form-area .logo {
   width: 345px;
-  height: 49px;
+  height: 110px;
   margin-bottom: 4rem;
-  background-size: contain;
   font-size: 30px;
+  background: url('../images/logo.png') top left no-repeat;
+  background-size: 200px;
+  margin: 20px auto;
+  margin-left: 35px;
 }
 .login .form-area .tit {
   margin-bottom: 1.375rem;

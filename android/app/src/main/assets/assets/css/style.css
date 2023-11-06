@@ -6559,6 +6559,53 @@ p {
   margin-left: 10px;
 }
 
+.loaction-button {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  background: url(../images/location.png) top left no-repeat;
+  bottom: 75px;
+  right: 10px;
+  height: 38px;
+  width: 38px;
+  border: 1px solid #e9e9ec;
+  border-radius: 8px;
+  background-size: 21px;
+  background-color: white;
+  background-position-y: center;
+  background-position-x: center;
+}
+
+#interaction-button {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  background: url(../images/insertOff.png) top left no-repeat;
+  bottom: 32px;
+  right: 10px;
+  height: 38px;
+  width: 38px;
+  border: 1px solid #e9e9ec;
+  border-radius: 8px;
+  background-size: 20px;
+  background-color: white;
+  background-position-y: center;
+  background-position-x: center;
+}
+
+#interaction-button.active {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  background: url(../images/insertOn.png) top left no-repeat;
+  background-size: 20px;
+  background-color: white;
+  border: 1px solid #e9e9ec;
+  background-position-y: center;
+  background-position-x: center;
+}
+
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

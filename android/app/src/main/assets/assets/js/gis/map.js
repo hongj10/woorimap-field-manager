@@ -32,21 +32,11 @@ const map = new ol.Map({
   view: defaultView,
 });
 
-$('#drawSwitch').click(function () {
-  $(this).toggleClass('active');
-  if ($('#drawSwitch').hasClass('active')) {
-    map.addInteraction(insertInteraction);
-    map.addInteraction(modifyInteraction);
-    map.removeInteraction(selectInteraction);
-    map.on('click', showUpdateTooltip);
-  } else {
-    map.removeInteraction(insertInteraction);
-    map.removeInteraction(modifyInteraction);
-    map.addInteraction(selectInteraction);
-    map.un('click', showUpdateTooltip);
-  }
-});
-
+  const scaleLine = new ol.control.ScaleLine({
+    units: 'metric',
+  })
+  map.addControl(scaleLine)
+  
 function createFeaturesFromGeoJSON(geojsonData) {
   var features = new ol.format.GeoJSON().readFeatures(geojsonData);
   console.log(features);
@@ -330,7 +320,23 @@ function shpDownload() {
     'data:application/json;charset=utf-8,' + encodeURIComponent(json);
 }
 
+function onInteractionEvt(evt) {
+  $(evt).toggleClass('active');
+  if ($('#interaction-button').hasClass('active')) {
+    map.addInteraction(insertInteraction);
+    map.addInteraction(modifyInteraction);
+    map.removeInteraction(selectInteraction);
+    map.on('click', showUpdateTooltip);
+  } else {
+    map.removeInteraction(insertInteraction);
+    map.removeInteraction(modifyInteraction);
+    map.addInteraction(selectInteraction);
+    map.un('click', showUpdateTooltip);
+  }
+}
+
 window.map = map;
 window.onSelectCancel = onSelectCancel;
 window.toastAlert = toastAlert;
 window.shpDownload = shpDownload;
+window.onInteractionEvt = onInteractionEvt;
