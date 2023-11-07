@@ -15,6 +15,7 @@ const showInsertTooltip = async event => {
     '<button class="custom-button cancel" onclick="onInsertCancel()">취소</button>';
   content += '</div>';
   const coordAddress = await searchCoord(feature.values_?.geometry.flatCoordinates);
+  feature.values_['지형지물'] = '';
   feature.values_['도엽명'] = '';
   feature.values_['조사내용'] = '';
   feature.values_['주소'] = coordAddress;
@@ -67,6 +68,94 @@ function onConfirmClick() {
   
           let value = properties[key];
   
+          if (key === '지형지물') {
+            content += `<strong class="surveyKey">${key}</strong>`;
+            content += `<select class="surveyValue">`;
+            if (value == '도로') {
+              content += `<option value="도로" selected>도로</option>`
+            } else {
+              content += `<option value="도로">도로</option>`;
+            }
+            if (value == '다리(교량)') {
+              content += `<option value="다리(교량)" selected>다리(교량)</option>`
+            } else {
+              content += `<option value="다리(교량)">다리(교량)</option>`;
+            }
+            if (value == '성ㆍ절토 및 옹벽') {
+              content += `<option value="성ㆍ절토 및 옹벽" selected>성ㆍ절토 및 옹벽</option>`
+            } else {
+              content += `<option value="성ㆍ절토 및 옹벽">성ㆍ절토 및 옹벽</option>`;
+            }
+            if (value == '횡단 지하도입구') {
+              content += `<option value="횡단 지하도입구" selected>횡단 지하도입구</option>`
+            } else {
+              content += `<option value="횡단 지하도입구">횡단 지하도입구</option>`;
+            }
+            if (value == '보도') {
+              content += `<option value="보도" selected>보도</option>`
+            } else {
+              content += `<option value="보도">보도</option>`;
+            }
+            if (value == '방파제') {
+              content += `<option value="방파제" selected>방파제</option>`
+            } else {
+              content += `<option value="방파제">방파제</option>`;
+            }
+            if (value == '보') {
+              content += `<option value="보" selected>보</option>`
+            } else {
+              content += `<option value="보">보</option>`;
+            }
+            if (value == '건물') {
+              content += `<option value="건물" selected>건물</option>`
+            } else {
+              content += `<option value="건물">건물</option>`;
+            }
+            if (value == '도로시설물') {
+              content += `<option value="도로시설물" selected>도로시설물</option>`
+            } else {
+              content += `<option value="도로시설물">도로시설물</option>`;
+            }
+            if (value == '방파제') {
+              content += `<option value="방파제" selected>방파제</option>`
+            } else {
+              content += `<option value="방파제">방파제</option>`;
+            }
+            if (value == '표지') {
+              content += `<option value="표지" selected>표지</option>`
+            } else {
+              content += `<option value="표지">표지</option>`;
+            }
+            if (value == '구조물') {
+              content += `<option value="구조물" selected>구조물</option>`
+            } else {
+              content += `<option value="구조물">구조물</option>`;
+            }
+            if (value == '전주') {
+              content += `<option value="전주" selected>전주</option>`
+            } else {
+              content += `<option value="전주">전주</option>`;
+            }
+            if (value == '맨홀') {
+              content += `<option value="맨홀" selected>맨홀</option>`
+            } else {
+              content += `<option value="맨홀">맨홀</option>`;
+            }
+            if (value == 'CCTV') {
+              content += `<option value="CCTV" selected>CCTV</option>`
+            } else {
+              content += `<option value="CCTV">CCTV</option>`;
+            }
+            if (value == '담장') {
+              content += `<option value="담장" selected>담장</option>`
+            } else {
+              content += `<option value="담장">담장</option>`;
+            }
+  
+              content += `</select><br/>`;
+            continue;
+          }
+
           if (key === '현장사진1') {
             content += `<strong class="surveyKey">${key}</strong>`;
             content += `<input id="photo-update-text1" style="display: none;" class="surveyValue" type="text" value="${value}" />`;

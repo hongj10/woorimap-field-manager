@@ -1,3 +1,5 @@
+// const { act } = require("react-test-renderer");
+
 const defaultView = new ol.View({
   projection: 'EPSG:5186',
   center: [950788.9055305821, 1951939.113108684],
@@ -26,7 +28,7 @@ const selectOverlay = new ol.Overlay({
 });
 
 const map = new ol.Map({
-  layers: [baseLayer],
+  layers: [baseLayer, satelliteLayer],
   target: 'map',
   overlays: [insertOverlay, updateOverlay, selectOverlay],
   view: defaultView,
@@ -36,7 +38,13 @@ const map = new ol.Map({
     units: 'metric',
   })
   map.addControl(scaleLine)
-  
+
+  window.ReactNativeWebView.postMessage(
+    JSON.stringify({
+      type: 'INIT_LOAD_GEOJSON',
+    }),
+  );
+
 function createFeaturesFromGeoJSON(geojsonData) {
   var features = new ol.format.GeoJSON().readFeatures(geojsonData);
   console.log(features);
@@ -47,6 +55,35 @@ let insertInteraction;
 let modifyInteraction;
 let selectInteraction;
 let vectorLayer;
+
+function onInteractionEvt(evt) {
+  $(evt).toggleClass('active');
+  if ($('#interaction-button').hasClass('active')) {
+    map.addInteraction(insertInteraction);
+    map.addInteraction(modifyInteraction);
+    map.removeInteraction(selectInteraction);
+    map.on('click', showUpdateTooltip);
+  } else {
+    map.removeInteraction(insertInteraction);
+    map.removeInteraction(modifyInteraction);
+    map.addInteraction(selectInteraction);
+    map.un('click', showUpdateTooltip);
+  }
+}
+
+function onBaseEvt() {
+  $('#satellite-btn').removeClass('active');
+  $('#base-btn').addClass('active');
+  satelliteLayer.setVisible();
+  baseLayer.setVisible(true);
+}
+
+function onSatelliteEvt() {
+  $('#base-btn').removeClass('active');
+  $('#satellite-btn').addClass('active');
+  baseLayer.setVisible();
+  satelliteLayer.setVisible(true);
+}
 
 function displayGeoJSONOnMap(geojsonData) {
   const vectorSource = new ol.source.Vector({
@@ -195,6 +232,7 @@ document.addEventListener('message', function (event) {
     case 'LOAD_GEOJSON':
       if (!map.getAllLayers().find(layer => layer.values_.id == 'suveyLayer')) {
         displayGeoJSONOnMap(messageData.data);
+        console.log('messageData.data', messageData.data)
         // document.getElementById('loading-screen').style.display = 'none';
         // document.getElementById('loadingOverlay').style.display = 'none';
       }
@@ -253,8 +291,7 @@ document.addEventListener('message', function (event) {
     // case 'HIDE_LOADING':
     //   document.getElementById('loading-screen').style.display = 'none';
     case 'SHOW_ALERT':
-      alert('어플리케이션을 재시작해주세요.');
-
+      // alert('어플리케이션을 재시작해주세요.');
       break;
     case 'HIDE_LAYER_LOADING':
       document.getElementById('loadingOverlay').style.display = 'none';
@@ -318,21 +355,6 @@ function shpDownload() {
   const json = format.writeFeatures(features);
   download.href =
     'data:application/json;charset=utf-8,' + encodeURIComponent(json);
-}
-
-function onInteractionEvt(evt) {
-  $(evt).toggleClass('active');
-  if ($('#interaction-button').hasClass('active')) {
-    map.addInteraction(insertInteraction);
-    map.addInteraction(modifyInteraction);
-    map.removeInteraction(selectInteraction);
-    map.on('click', showUpdateTooltip);
-  } else {
-    map.removeInteraction(insertInteraction);
-    map.removeInteraction(modifyInteraction);
-    map.addInteraction(selectInteraction);
-    map.un('click', showUpdateTooltip);
-  }
 }
 
 window.map = map;

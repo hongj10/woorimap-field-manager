@@ -6576,6 +6576,38 @@ p {
   background-position-x: center;
 }
 
+.base-button {
+  position: absolute;
+  z-index: 10;
+  display: inline-block;
+  top: 67px;
+  height: 24px;
+  width: 68px;
+  border: 1px solid #e9e9ec;
+  font-size: 0.7rem;
+  border-radius: 3px;
+  background-size: 21px;
+  background-color: white;
+  background-position-y: center;
+  background-position-x: center;
+}
+
+#base-btn {
+  right: 75px;
+}
+
+#base-btn.active {
+  color: #2196f3;
+}
+
+#satellite-btn {
+  right: 3px;
+}
+
+#satellite-btn.active {
+  color: #2196f3;
+}
+
 #interaction-button {
   position: absolute;
   z-index: 10;

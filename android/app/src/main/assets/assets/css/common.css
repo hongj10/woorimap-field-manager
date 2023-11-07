@@ -57,6 +57,16 @@ select {
   display: block;
   background: url(../images/logo.png) top left no-repeat;
 }
+.header .logo .logo_2 {
+  width: 100px;
+  height: 25px;
+  display: block;
+  background: url(../images/logo_2.png) top left no-repeat;
+  position: absolute;
+  top: 17px;
+  left: 100px;
+  background-size: contain;
+}
 .header .gnb > ul {
   margin: 0;
   text-align: center;
